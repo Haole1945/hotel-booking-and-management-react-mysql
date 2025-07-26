@@ -1,0 +1,12 @@
+/dist/
+/build/
+/out/
+# 
+/target/
+*.class
+*.log
+*.jar
+*.war
+*.ear
+# 
+/node_modules/

@@ -21,4 +21,7 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, String> {
     
     @Query("SELECT nv FROM NhanVien nv WHERE nv.email = :email OR nv.username = :username")
     Optional<NhanVien> findByEmailOrUsername(@Param("email") String email, @Param("username") String username);
+
+    @Query("SELECT nv FROM NhanVien nv LEFT JOIN FETCH nv.boPhan WHERE nv.email = :email OR nv.username = :username")
+    Optional<NhanVien> findByEmailOrUsernameWithBoPhan(@Param("email") String email, @Param("username") String username);
 }

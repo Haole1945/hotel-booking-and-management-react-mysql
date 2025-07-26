@@ -40,4 +40,8 @@ public class KhachHang {
     @Size(max = 20, message = "Mã số thuế không được quá 20 ký tự")
     @Column(name = "MA_SO_THUE")
     private String maSoThue;
+
+    @Size(max = 255, message = "Mật khẩu không được quá 255 ký tự")
+    @Column(name = "MAT_KHAU")
+    private String matKhau;
 }

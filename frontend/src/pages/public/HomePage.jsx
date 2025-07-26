@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, Calendar, Users, Star, Wifi, Car, Coffee, Dumbbell } from 'lucide-react'
 import RoomSearch from '../../components/common/RoomSearch'
 import RoomResult from '../../components/common/RoomResult'
+import { api } from '../../services/api'
 
 const HomePage = () => {
   const [roomSearchResults, setRoomSearchResults] = useState([])
@@ -11,55 +12,62 @@ const HomePage = () => {
     setRoomSearchResults(results)
   }
 
-  const featuredRooms = [
-    {
-      id: 1,
-      name: 'Phòng Deluxe',
-      image: '/api/placeholder/400/300',
-      price: '1,500,000',
-      rating: 4.8,
-      amenities: ['Wifi', 'TV', 'Điều hòa', 'Minibar']
-    },
-    {
-      id: 2,
-      name: 'Phòng Suite',
-      image: '/api/placeholder/400/300',
-      price: '2,500,000',
-      rating: 4.9,
-      amenities: ['Wifi', 'TV', 'Điều hòa', 'Jacuzzi']
-    },
-    {
-      id: 3,
-      name: 'Phòng Standard',
-      image: '/api/placeholder/400/300',
-      price: '800,000',
-      rating: 4.5,
-      amenities: ['Wifi', 'TV', 'Điều hòa']
-    }
-  ]
+  const [featuredRooms, setFeaturedRooms] = useState([])
 
-  const services = [
-    {
-      icon: Wifi,
-      title: 'Wifi miễn phí',
-      description: 'Kết nối internet tốc độ cao trong toàn bộ khách sạn'
-    },
-    {
-      icon: Car,
-      title: 'Bãi đỗ xe',
-      description: 'Bãi đỗ xe rộng rãi, an toàn cho khách hàng'
-    },
-    {
-      icon: Coffee,
-      title: 'Nhà hàng',
-      description: 'Nhà hàng phục vụ các món ăn ngon, đa dạng'
-    },
-    {
-      icon: Dumbbell,
-      title: 'Phòng gym',
-      description: 'Phòng tập gym hiện đại với đầy đủ thiết bị'
+  useEffect(() => {
+    fetchFeaturedRooms()
+  }, [])
+
+  const fetchFeaturedRooms = async () => {
+    try {
+      // Gọi API để lấy phòng nổi bật
+      const response = await api.get('/api/phong/featured')
+      setFeaturedRooms(response.data.rooms || [])
+    } catch (error) {
+      console.error('Error fetching featured rooms:', error)
+      // Fallback to empty array if API fails
+      setFeaturedRooms([])
     }
-  ]
+  }
+
+  const [services, setServices] = useState([])
+
+  useEffect(() => {
+    fetchServices()
+  }, [])
+
+  const fetchServices = async () => {
+    try {
+      // Gọi API để lấy danh sách dịch vụ nổi bật
+      const response = await api.get('/api/dich-vu/featured')
+      setServices(response.data.services || [])
+    } catch (error) {
+      console.error('Error fetching services:', error)
+      // Fallback to default services if API fails
+      setServices([
+        {
+          icon: Wifi,
+          title: 'Wifi miễn phí',
+          description: 'Kết nối internet tốc độ cao trong toàn bộ khách sạn'
+        },
+        {
+          icon: Car,
+          title: 'Bãi đỗ xe',
+          description: 'Bãi đỗ xe rộng rãi, an toàn cho khách hàng'
+        },
+        {
+          icon: Coffee,
+          title: 'Nhà hàng',
+          description: 'Nhà hàng phục vụ các món ăn ngon, đa dạng'
+        },
+        {
+          icon: Dumbbell,
+          title: 'Phòng gym',
+          description: 'Phòng tập gym hiện đại với đầy đủ thiết bị'
+        }
+      ])
+    }
+  }
 
   return (
     <div className="min-h-screen">

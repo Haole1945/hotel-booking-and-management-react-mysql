@@ -15,6 +15,7 @@ import {
   Clock,
   UserCheck
 } from 'lucide-react'
+import { api } from '../../services/api'
 
 const AdminDashboard = () => {
   const { user } = useAuth()
@@ -42,21 +43,11 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Mock data - sẽ thay thế bằng API calls
-      setStats({
-        totalRooms: 50,
-        occupiedRooms: 32,
-        totalStaff: 25,
-        totalCustomers: 1250,
-        monthlyRevenue: 850000000,
-        todayRevenue: 15000000,
-        totalServices: 12,
-        totalAmenities: 8,
-        pendingReservations: 5,
-        checkInsToday: 8,
-        checkOutsToday: 12,
-        occupancyRate: 64
-      })
+      // Gọi API thực tế để lấy thống kê dashboard
+      const response = await api.get('/api/dashboard/admin/stats')
+      const statsData = response.data.stats || {}
+
+      setStats(statsData)
 
       setRecentActivities([
         {
@@ -89,38 +80,12 @@ const AdminDashboard = () => {
         }
       ])
 
-      setTopPerformers([
-        {
-          id: 1,
-          name: 'Nguyễn Thị Lan',
-          role: 'Lễ tân',
-          performance: 95,
-          tasks: 45
-        },
-        {
-          id: 2,
-          name: 'Trần Văn Nam',
-          role: 'Lễ tân',
-          performance: 92,
-          tasks: 38
-        },
-        {
-          id: 3,
-          name: 'Lê Thị Hoa',
-          role: 'Housekeeping',
-          performance: 88,
-          tasks: 52
-        }
-      ])
+      // Gọi API để lấy top performers và revenue data
+      const performersResponse = await api.get('/api/dashboard/admin/top-performers')
+      const revenueResponse = await api.get('/api/dashboard/admin/revenue-data')
 
-      setRevenueData([
-        { month: 'T1', revenue: 650000000 },
-        { month: 'T2', revenue: 720000000 },
-        { month: 'T3', revenue: 680000000 },
-        { month: 'T4', revenue: 750000000 },
-        { month: 'T5', revenue: 820000000 },
-        { month: 'T6', revenue: 850000000 }
-      ])
+      setTopPerformers(performersResponse.data.performers || [])
+      setRevenueData(revenueResponse.data.revenue || [])
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     }
@@ -150,7 +115,11 @@ const AdminDashboard = () => {
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-lg p-6 text-white">
         <h1 className="text-3xl font-bold mb-2">
-          Chào mừng, {user?.hoTen || `${user?.ho} ${user?.ten}`}!
+          Chào mừng, {user?.hoTen ||
+                      user?.tenNhanVien ||
+                      `${user?.ho || ''} ${user?.ten || ''}`.trim() ||
+                      user?.email?.split('@')[0] ||
+                      'Quản lý'}!
         </h1>
         <p className="text-purple-100">
           Dashboard quản lý - Tổng quan hoạt động khách sạn

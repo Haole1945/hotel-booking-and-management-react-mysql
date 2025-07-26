@@ -12,6 +12,7 @@ import {
   TrendingUp
 } from 'lucide-react'
 import Pagination from '../../components/common/Pagination'
+import { api } from '../../services/api'
 
 const CustomerManagement = () => {
   const [customers, setCustomers] = useState([])
@@ -34,57 +35,12 @@ const CustomerManagement = () => {
   const fetchCustomers = async () => {
     try {
       setLoading(true)
-      // Mock data - sẽ thay thế bằng API call
-      const mockCustomers = [
-        {
-          id: 1,
-          hoTen: 'Nguyễn Văn A',
-          email: 'nguyenvana@email.com',
-          soDienThoai: '0123456789',
-          diaChi: '123 Đường ABC, Quận 1, TP.HCM',
-          ngaySinh: '1990-05-15',
-          gioiTinh: 'Nam',
-          ngayDangKy: '2023-01-15',
-          loaiKhachHang: 'VIP',
-          tongDatPhong: 15,
-          tongChiTieu: 25000000,
-          lanCuoiDatPhong: '2024-01-10',
-          trangThai: 'active'
-        },
-        {
-          id: 2,
-          hoTen: 'Trần Thị B',
-          email: 'tranthib@email.com',
-          soDienThoai: '0987654321',
-          diaChi: '456 Đường XYZ, Quận 3, TP.HCM',
-          ngaySinh: '1985-08-22',
-          gioiTinh: 'Nữ',
-          ngayDangKy: '2023-03-20',
-          loaiKhachHang: 'Thường',
-          tongDatPhong: 8,
-          tongChiTieu: 12000000,
-          lanCuoiDatPhong: '2024-01-05',
-          trangThai: 'active'
-        },
-        {
-          id: 3,
-          hoTen: 'Lê Văn C',
-          email: 'levanc@email.com',
-          soDienThoai: '0369852147',
-          diaChi: '789 Đường DEF, Quận 7, TP.HCM',
-          ngaySinh: '1992-12-10',
-          gioiTinh: 'Nam',
-          ngayDangKy: '2023-06-10',
-          loaiKhachHang: 'Thường',
-          tongDatPhong: 3,
-          tongChiTieu: 4500000,
-          lanCuoiDatPhong: '2023-12-20',
-          trangThai: 'inactive'
-        }
-      ]
+      // Gọi API thực tế thay vì mock data
+      const response = await api.get('/api/khach-hang')
+      const customerData = response.data.khachHangList || []
 
-      setCustomers(mockCustomers)
-      setFilteredCustomers(mockCustomers)
+      setCustomers(customerData)
+      setFilteredCustomers(customerData)
     } catch (error) {
       console.error('Error fetching customers:', error)
     } finally {

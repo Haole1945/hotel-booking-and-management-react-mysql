@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { authService } from '../services/authService'
+import { normalizeUserData } from '../utils/userUtils'
 
 const AuthContext = createContext()
 
@@ -40,24 +41,43 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await authService.login(credentials)
-      
-      if (response.statusCode === 200) {
-        const { token, role, nhanVien } = response
-        
-        const userData = {
-          ...nhanVien,
-          role: role || 'EMPLOYEE'
+
+      if (response.statusCode === 200 || response.success) {
+        const { token, role, nhanVien, khachHang, user } = response
+
+
+
+        // Xử lý dữ liệu user từ backend
+        let userData = {}
+
+        if (nhanVien) {
+          // Nhân viên
+          userData = normalizeUserData(nhanVien, role || 'EMPLOYEE')
+        } else if (khachHang) {
+          // Khách hàng
+          userData = normalizeUserData(khachHang, 'CUSTOMER')
+        } else if (user) {
+          // Fallback cho cấu trúc user khác
+          userData = normalizeUserData(user, role || user.role || 'CUSTOMER')
+        } else {
+          // Nếu không có dữ liệu user nào, tạo fallback từ response
+          userData = normalizeUserData({
+            ...response,
+            email: response.email || credentials.email || ''
+          }, role || response.role || 'CUSTOMER')
         }
-        
+
+
+
         setToken(token)
         setUser(userData)
-        
+
         localStorage.setItem('token', token)
         localStorage.setItem('user', JSON.stringify(userData))
-        
+
         return { success: true, user: userData }
       } else {
-        return { success: false, message: response.message }
+        return { success: false, message: response.message || 'Đăng nhập thất bại' }
       }
     } catch (error) {
       console.error('Login error:', error)
@@ -101,6 +121,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    setUser,
     token,
     loading,
     login,

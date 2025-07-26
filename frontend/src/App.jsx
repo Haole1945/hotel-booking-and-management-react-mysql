@@ -5,12 +5,16 @@ import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import BackendStatus from './components/common/BackendStatus'
 
+
 // Public pages
 import HomePage from './pages/public/HomePage'
 import RoomListPage from './pages/public/RoomListPage'
 import RoomDetailPage from './pages/public/RoomDetailPage'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
+
+// Common pages
+import ProfilePage from './pages/common/ProfilePage'
 
 // Customer pages
 import CustomerDashboard from './pages/customer/CustomerDashboard'
@@ -91,6 +95,13 @@ function App() {
             <Route path="amenities" element={<AmenityManagement />} />
             <Route path="reports" element={<ReportsPage />} />
           </Route>
+
+          {/* Profile Route - Available for all authenticated users */}
+          <Route path="/profile" element={
+            <ProtectedRoute allowedRoles={['CUSTOMER', 'EMPLOYEE', 'ADMIN']}>
+              <ProfilePage />
+            </ProtectedRoute>
+          } />
 
           {/* 404 Page */}
           <Route path="*" element={

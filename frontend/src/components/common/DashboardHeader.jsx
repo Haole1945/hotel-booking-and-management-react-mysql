@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { Bell, User, LogOut, Settings, Menu } from 'lucide-react'
+import { getUserDisplayName, getRoleDisplayName } from '../../utils/userUtils'
 
 const DashboardHeader = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
@@ -13,18 +14,7 @@ const DashboardHeader = () => {
     navigate('/')
   }
 
-  const getRoleName = (role) => {
-    switch (role) {
-      case 'ADMIN':
-        return 'Quản lý'
-      case 'EMPLOYEE':
-        return 'Lễ tân'
-      case 'CUSTOMER':
-        return 'Khách hàng'
-      default:
-        return 'Người dùng'
-    }
-  }
+
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
@@ -39,7 +29,7 @@ const DashboardHeader = () => {
               <span className="text-xl font-bold text-gray-900">Hotel Booking</span>
             </Link>
             <span className="text-gray-400">|</span>
-            <span className="text-gray-600">{getRoleName(user?.role)} Dashboard</span>
+            <span className="text-gray-600">{getRoleDisplayName(user?.role)} Dashboard</span>
           </div>
 
           {/* Right side */}
@@ -60,10 +50,10 @@ const DashboardHeader = () => {
                 </div>
                 <div className="text-left">
                   <div className="text-sm font-medium">
-                    {user?.hoTen || `${user?.ho} ${user?.ten}`}
+                    {getUserDisplayName(user)}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {getRoleName(user?.role)}
+                    {getRoleDisplayName(user?.role)}
                   </div>
                 </div>
               </button>
@@ -72,13 +62,13 @@ const DashboardHeader = () => {
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                   <div className="px-4 py-2 border-b border-gray-100">
                     <div className="text-sm font-medium text-gray-900">
-                      {user?.hoTen || `${user?.ho} ${user?.ten}`}
+                      {getUserDisplayName(user)}
                     </div>
                     <div className="text-xs text-gray-500">{user?.email}</div>
                   </div>
                   
                   <Link
-                    to="/customer/profile"
+                    to="/profile"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={() => setIsUserMenuOpen(false)}
                   >

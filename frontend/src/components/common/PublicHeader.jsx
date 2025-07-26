@@ -57,7 +57,12 @@ const PublicHeader = () => {
                   className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors"
                 >
                   <User className="w-5 h-5" />
-                  <span>{user.hoTen || `${user.ho} ${user.ten}`}</span>
+                  <span>{user?.hoTen ||
+                         user?.tenNhanVien ||
+                         user?.tenKhachHang ||
+                         `${user?.ho || ''} ${user?.ten || ''}`.trim() ||
+                         user?.email?.split('@')[0] ||
+                         'Người dùng'}</span>
                 </button>
                 
                 {isUserMenuOpen && (

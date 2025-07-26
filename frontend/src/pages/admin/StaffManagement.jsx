@@ -15,6 +15,7 @@ import {
   Shield,
   User
 } from 'lucide-react'
+import { api } from '../../services/api'
 import Pagination from '../../components/common/Pagination'
 import toast from 'react-hot-toast'
 
@@ -56,82 +57,15 @@ const StaffManagement = () => {
   const fetchStaff = async () => {
     try {
       setLoading(true)
-      // Mock data - sẽ thay thế bằng API call
-      const mockStaff = [
-        {
-          id: 1,
-          ho: 'Nguyễn',
-          ten: 'Thị Lan',
-          hoTen: 'Nguyễn Thị Lan',
-          email: 'lan.nguyen@hotel.com',
-          soDienThoai: '0123456789',
-          diaChi: '123 Đường ABC, Quận 1, TP.HCM',
-          ngaySinh: '1990-05-15',
-          gioiTinh: 'Nữ',
-          chucVu: 'Lễ tân',
-          phongBan: 'Front Office',
-          luong: 12000000,
-          ngayVaoLam: '2023-01-15',
-          trangThai: 'active',
-          role: 'EMPLOYEE'
-        },
-        {
-          id: 2,
-          ho: 'Trần',
-          ten: 'Văn Nam',
-          hoTen: 'Trần Văn Nam',
-          email: 'nam.tran@hotel.com',
-          soDienThoai: '0987654321',
-          diaChi: '456 Đường XYZ, Quận 3, TP.HCM',
-          ngaySinh: '1988-08-22',
-          gioiTinh: 'Nam',
-          chucVu: 'Lễ tân trưởng',
-          phongBan: 'Front Office',
-          luong: 15000000,
-          ngayVaoLam: '2022-03-20',
-          trangThai: 'active',
-          role: 'EMPLOYEE'
-        },
-        {
-          id: 3,
-          ho: 'Lê',
-          ten: 'Thị Hoa',
-          hoTen: 'Lê Thị Hoa',
-          email: 'hoa.le@hotel.com',
-          soDienThoai: '0369852147',
-          diaChi: '789 Đường DEF, Quận 7, TP.HCM',
-          ngaySinh: '1992-12-10',
-          gioiTinh: 'Nữ',
-          chucVu: 'Housekeeping',
-          phongBan: 'Housekeeping',
-          luong: 10000000,
-          ngayVaoLam: '2023-06-10',
-          trangThai: 'active',
-          role: 'EMPLOYEE'
-        },
-        {
-          id: 4,
-          ho: 'Phạm',
-          ten: 'Minh Tuấn',
-          hoTen: 'Phạm Minh Tuấn',
-          email: 'tuan.pham@hotel.com',
-          soDienThoai: '0741852963',
-          diaChi: '321 Đường GHI, Quận 5, TP.HCM',
-          ngaySinh: '1985-03-25',
-          gioiTinh: 'Nam',
-          chucVu: 'Quản lý',
-          phongBan: 'Management',
-          luong: 25000000,
-          ngayVaoLam: '2021-01-01',
-          trangThai: 'active',
-          role: 'ADMIN'
-        }
-      ]
+      // Gọi API thực tế thay vì mock data
+      const response = await api.get('/api/nhan-vien')
+      const staffData = response.data.nhanVienList || []
 
-      setStaff(mockStaff)
-      setFilteredStaff(mockStaff)
+      setStaff(staffData)
+      setFilteredStaff(staffData)
     } catch (error) {
       console.error('Error fetching staff:', error)
+      // Có thể hiển thị thông báo lỗi cho user
     } finally {
       setLoading(false)
     }

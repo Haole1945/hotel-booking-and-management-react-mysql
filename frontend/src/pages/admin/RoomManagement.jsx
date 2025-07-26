@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import Pagination from '../../components/common/Pagination'
 import toast from 'react-hot-toast'
+import { api } from '../../services/api'
 
 const RoomManagement = () => {
   const [rooms, setRooms] = useState([])
@@ -45,64 +46,12 @@ const RoomManagement = () => {
   const fetchRooms = async () => {
     try {
       setLoading(true)
-      // Mock data - sẽ thay thế bằng API call
-      const mockRooms = [
-        {
-          id: 1,
-          soPhong: '101',
-          tang: 1,
-          tenKp: 'Standard',
-          tenLp: 'Single',
-          tenTrangThai: 'Trống',
-          idTrangThai: 1,
-          giaPhong: 800000,
-          moTa: 'Phòng tiêu chuẩn với giường đơn',
-          dienTich: 25,
-          soGiuong: 1
-        },
-        {
-          id: 2,
-          soPhong: '102',
-          tang: 1,
-          tenKp: 'Deluxe',
-          tenLp: 'Double',
-          tenTrangThai: 'Đã thuê',
-          idTrangThai: 2,
-          giaPhong: 1200000,
-          moTa: 'Phòng deluxe với giường đôi',
-          dienTich: 35,
-          soGiuong: 1
-        },
-        {
-          id: 3,
-          soPhong: '201',
-          tang: 2,
-          tenKp: 'Suite',
-          tenLp: 'King',
-          tenTrangThai: 'Bảo trì',
-          idTrangThai: 3,
-          giaPhong: 2000000,
-          moTa: 'Phòng suite cao cấp',
-          dienTich: 50,
-          soGiuong: 1
-        },
-        {
-          id: 4,
-          soPhong: '205',
-          tang: 2,
-          tenKp: 'Standard',
-          tenLp: 'Twin',
-          tenTrangThai: 'Trống',
-          idTrangThai: 1,
-          giaPhong: 900000,
-          moTa: 'Phòng tiêu chuẩn với 2 giường đơn',
-          dienTich: 30,
-          soGiuong: 2
-        }
-      ]
+      // Gọi API để lấy danh sách phòng
+      const response = await api.get('/api/phong')
+      const roomData = response.data.phongList || []
 
-      setRooms(mockRooms)
-      setFilteredRooms(mockRooms)
+      setRooms(roomData)
+      setFilteredRooms(roomData)
     } catch (error) {
       console.error('Error fetching rooms:', error)
     } finally {
@@ -227,26 +176,27 @@ const RoomManagement = () => {
         ))
         toast.success('Cập nhật phòng thành công!')
       } else {
-        // TODO: Call API to create room
-        const newRoom = {
-          id: Date.now(),
+        // Gọi API để tạo phòng mới
+        const response = await api.post('/api/phong', {
           ...roomForm,
-          tang: parseInt(roomForm.tang),
-          tenKp: 'Standard', // Mock data
-          tenLp: 'Single',
-          tenTrangThai: 'Trống',
-          giaPhong: 800000,
-          dienTich: 25,
-          soGiuong: 1
-        }
-        setRooms(prev => [...prev, newRoom])
-        toast.success('Thêm phòng thành công!')
-      }
+          tang: parseInt(roomForm.tang)
+        })
 
-      setShowAddModal(false)
-      setShowEditModal(false)
-      setSelectedRoom(null)
-      applyFilters(filters)
+        if (response.data.success) {
+          toast.success('Tạo phòng thành công!')
+          fetchRooms() // Refresh danh sách phòng
+          setShowEditModal(false)
+          setRoomForm({
+            soPhong: '',
+            tang: '',
+            maKp: '',
+            maLp: '',
+            maTrangThai: ''
+          })
+        } else {
+          toast.error(response.data.message || 'Tạo phòng thất bại')
+        }
+      }
     } catch (error) {
       toast.error('Có lỗi xảy ra khi lưu phòng')
     }

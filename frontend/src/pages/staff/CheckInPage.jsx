@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Search, UserCheck, Calendar, Clock, AlertCircle, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { api } from '../../services/api'
 
 const CheckInPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -21,44 +22,15 @@ const CheckInPage = () => {
   const fetchTodayReservations = async () => {
     try {
       setLoading(true)
-      // Mock data - sẽ thay thế bằng API call
-      const mockReservations = [
-        {
-          id: 1,
-          maPhieuThue: 'PT001',
-          customerName: 'Nguyễn Văn A',
-          customerPhone: '0123456789',
-          customerEmail: 'nguyenvana@email.com',
-          roomNumber: '101',
-          roomType: 'Deluxe',
-          checkIn: '2024-01-15',
-          checkOut: '2024-01-18',
-          status: 'confirmed',
-          total: 2400000,
-          notes: 'Khách VIP, cần phòng tầng cao',
-          specialRequests: 'Giường đôi, view biển'
-        },
-        {
-          id: 2,
-          maPhieuThue: 'PT002',
-          customerName: 'Trần Thị B',
-          customerPhone: '0987654321',
-          customerEmail: 'tranthib@email.com',
-          roomNumber: '205',
-          roomType: 'Suite',
-          checkIn: '2024-01-15',
-          checkOut: '2024-01-17',
-          status: 'confirmed',
-          total: 1800000,
-          notes: 'Khách thường',
-          specialRequests: 'Không hút thuốc'
-        }
-      ]
+      // Gọi API thực tế thay vì mock data
+      const today = new Date().toISOString().split('T')[0]
+      const response = await api.get(`/api/phieu-dat/ngay-den/${today}`)
+      const reservationData = response.data.phieuDatList || []
 
-      setReservations(mockReservations)
-      setFilteredReservations(mockReservations)
+      setReservations(reservationData)
+      setFilteredReservations(reservationData)
     } catch (error) {
-      console.error('Error fetching reservations:', error)
+      console.error('Error fetching today reservations:', error)
     } finally {
       setLoading(false)
     }

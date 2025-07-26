@@ -23,7 +23,6 @@ D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\entity\CtKhachO.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\entity\CtPhieuThue.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\entity\CtPhuThu.java
-D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\entity\CustomerAuth.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\entity\DichVu.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\entity\HangPhong.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\entity\HoaDon.java
@@ -42,7 +41,6 @@ D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\entity\TrangThai.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\exception\OurException.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\HotelApplication.java
-D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\repo\CustomerAuthRepository.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\repo\HangPhongRepository.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\repo\KhachHangRepository.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\repo\KieuPhongRepository.java

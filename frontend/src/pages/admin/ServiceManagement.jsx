@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import Pagination from '../../components/common/Pagination'
 import toast from 'react-hot-toast'
+import { api } from '../../services/api'
 
 const ServiceManagement = () => {
   const [services, setServices] = useState([])
@@ -49,90 +50,12 @@ const ServiceManagement = () => {
   const fetchServices = async () => {
     try {
       setLoading(true)
-      // Mock data - sẽ thay thế bằng API call
-      const mockServices = [
-        {
-          id: 1,
-          tenDichVu: 'Spa & Massage',
-          moTa: 'Dịch vụ spa và massage thư giãn cao cấp',
-          gia: 500000,
-          danhMuc: 'Wellness',
-          trangThai: 'active',
-          thoiGianThucHien: '60',
-          donVi: 'phút',
-          soLuongDat: 45,
-          danhGia: 4.8,
-          hinhAnh: '/api/placeholder/300/200'
-        },
-        {
-          id: 2,
-          tenDichVu: 'Breakfast Buffet',
-          moTa: 'Buffet sáng đa dạng món Á - Âu',
-          gia: 150000,
-          danhMuc: 'Food & Beverage',
-          trangThai: 'active',
-          thoiGianThucHien: '120',
-          donVi: 'phút',
-          soLuongDat: 120,
-          danhGia: 4.5,
-          hinhAnh: '/api/placeholder/300/200'
-        },
-        {
-          id: 3,
-          tenDichVu: 'Laundry Service',
-          moTa: 'Dịch vụ giặt ủi quần áo nhanh chóng',
-          gia: 50000,
-          danhMuc: 'Housekeeping',
-          trangThai: 'active',
-          thoiGianThucHien: '24',
-          donVi: 'giờ',
-          soLuongDat: 80,
-          danhGia: 4.3,
-          hinhAnh: '/api/placeholder/300/200'
-        },
-        {
-          id: 4,
-          tenDichVu: 'Airport Transfer',
-          moTa: 'Dịch vụ đưa đón sân bay',
-          gia: 300000,
-          danhMuc: 'Transportation',
-          trangThai: 'active',
-          thoiGianThucHien: '45',
-          donVi: 'phút',
-          soLuongDat: 35,
-          danhGia: 4.7,
-          hinhAnh: '/api/placeholder/300/200'
-        },
-        {
-          id: 5,
-          tenDichVu: 'Room Service',
-          moTa: 'Dịch vụ phục vụ tại phòng 24/7',
-          gia: 100000,
-          danhMuc: 'Food & Beverage',
-          trangThai: 'active',
-          thoiGianThucHien: '30',
-          donVi: 'phút',
-          soLuongDat: 200,
-          danhGia: 4.6,
-          hinhAnh: '/api/placeholder/300/200'
-        },
-        {
-          id: 6,
-          tenDichVu: 'Gym Access',
-          moTa: 'Sử dụng phòng gym và thiết bị thể thao',
-          gia: 200000,
-          danhMuc: 'Wellness',
-          trangThai: 'maintenance',
-          thoiGianThucHien: '120',
-          donVi: 'phút',
-          soLuongDat: 25,
-          danhGia: 4.2,
-          hinhAnh: '/api/placeholder/300/200'
-        }
-      ]
+      // Gọi API để lấy danh sách dịch vụ
+      const response = await api.get('/api/dich-vu')
+      const serviceData = response.data.dichVuList || []
 
-      setServices(mockServices)
-      setFilteredServices(mockServices)
+      setServices(serviceData)
+      setFilteredServices(serviceData)
     } catch (error) {
       console.error('Error fetching services:', error)
     } finally {

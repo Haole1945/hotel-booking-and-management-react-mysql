@@ -153,15 +153,7 @@ const LoginPage = () => {
             </div>
           </div>
 
-          {/* Test Accounts Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-            <h4 className="text-sm font-medium text-blue-800 mb-2">Tài khoản test:</h4>
-            <div className="text-xs text-blue-700 space-y-1">
-              <div><strong>Admin:</strong> admin@hotel.com / admin123</div>
-              <div><strong>Staff:</strong> staff@hotel.com / staff123</div>
-              <div><strong>Customer:</strong> Đăng ký tài khoản mới</div>
-            </div>
-          </div>
+
 
           <div>
             <button

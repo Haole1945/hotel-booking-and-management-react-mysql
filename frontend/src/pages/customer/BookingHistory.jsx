@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Calendar, Clock, CheckCircle, XCircle, Eye, Download } from 'lucide-react'
 import Pagination from '../../components/common/Pagination'
+import { api } from '../../services/api'
 
 const BookingHistory = () => {
   const [bookings, setBookings] = useState([])
@@ -18,60 +19,12 @@ const BookingHistory = () => {
   const fetchBookingHistory = async () => {
     try {
       setLoading(true)
-      // Mock data - sẽ thay thế bằng API call
-      const mockBookings = [
-        {
-          id: 1,
-          maPhieuThue: 'PT001',
-          roomNumber: '101',
-          roomType: 'Deluxe',
-          checkIn: '2024-01-15',
-          checkOut: '2024-01-18',
-          status: 'completed',
-          total: 2400000,
-          createdAt: '2024-01-10',
-          services: ['Wifi', 'Breakfast']
-        },
-        {
-          id: 2,
-          maPhieuThue: 'PT002',
-          roomNumber: '205',
-          roomType: 'Suite',
-          checkIn: '2024-01-20',
-          checkOut: '2024-01-22',
-          status: 'confirmed',
-          total: 1800000,
-          createdAt: '2024-01-18',
-          services: ['Wifi', 'Spa']
-        },
-        {
-          id: 3,
-          maPhieuThue: 'PT003',
-          roomNumber: '301',
-          roomType: 'Standard',
-          checkIn: '2024-02-01',
-          checkOut: '2024-02-03',
-          status: 'cancelled',
-          total: 1200000,
-          createdAt: '2024-01-25',
-          services: ['Wifi']
-        },
-        {
-          id: 4,
-          maPhieuThue: 'PT004',
-          roomNumber: '102',
-          roomType: 'Deluxe',
-          checkIn: '2024-02-10',
-          checkOut: '2024-02-12',
-          status: 'pending',
-          total: 1600000,
-          createdAt: '2024-02-08',
-          services: ['Wifi', 'Breakfast', 'Laundry']
-        }
-      ]
-      
-      setBookings(mockBookings)
-      setFilteredBookings(mockBookings)
+      // Gọi API thực tế để lấy lịch sử đặt phòng
+      const response = await api.get('/api/phieu-dat/khach-hang')
+      const bookingData = response.data.phieuDatList || []
+
+      setBookings(bookingData)
+      setFilteredBookings(bookingData)
     } catch (error) {
       console.error('Error fetching booking history:', error)
     } finally {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Search, UserX, CreditCard, Receipt, AlertCircle, CheckCircle, Calculator } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { api } from '../../services/api'
 
 const CheckOutPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -30,45 +31,12 @@ const CheckOutPage = () => {
   const fetchCheckedInGuests = async () => {
     try {
       setLoading(true)
-      // Mock data - sẽ thay thế bằng API call
-      const mockGuests = [
-        {
-          id: 1,
-          maPhieuThue: 'PT001',
-          customerName: 'Nguyễn Văn A',
-          customerPhone: '0123456789',
-          roomNumber: '101',
-          roomType: 'Deluxe',
-          checkIn: '2024-01-15',
-          checkOut: '2024-01-18',
-          actualCheckIn: '2024-01-15T14:00',
-          roomCharges: 2400000,
-          services: [
-            { name: 'Spa', price: 500000 },
-            { name: 'Minibar', price: 200000 }
-          ],
-          status: 'checkedin'
-        },
-        {
-          id: 2,
-          maPhieuThue: 'PT004',
-          customerName: 'Phạm Thị D',
-          customerPhone: '0741852963',
-          roomNumber: '102',
-          roomType: 'Deluxe',
-          checkIn: '2024-02-10',
-          checkOut: '2024-02-12',
-          actualCheckIn: '2024-02-10T15:30',
-          roomCharges: 1600000,
-          services: [
-            { name: 'Breakfast', price: 150000 }
-          ],
-          status: 'checkedin'
-        }
-      ]
+      // Gọi API thực tế thay vì mock data
+      const response = await api.get('/api/phieu-thue/checked-in')
+      const guestData = response.data.phieuThueList || []
 
-      setCheckedInGuests(mockGuests)
-      setFilteredGuests(mockGuests)
+      setCheckedInGuests(guestData)
+      setFilteredGuests(guestData)
     } catch (error) {
       console.error('Error fetching checked-in guests:', error)
     } finally {

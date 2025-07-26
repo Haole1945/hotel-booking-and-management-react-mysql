@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { Calendar, CreditCard, User, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { api } from '../../services/api'
+import { getUserDisplayName } from '../../utils/userUtils'
 
 const CustomerDashboard = () => {
   const { user } = useAuth()
@@ -14,35 +16,21 @@ const CustomerDashboard = () => {
   const [recentBookings, setRecentBookings] = useState([])
 
   useEffect(() => {
-    // Mock data - sẽ thay thế bằng API calls
-    setStats({
-      totalBookings: 12,
-      activeBookings: 2,
-      completedBookings: 8,
-      cancelledBookings: 2
-    })
-
-    setRecentBookings([
-      {
-        id: 1,
-        roomNumber: '101',
-        roomType: 'Deluxe',
-        checkIn: '2024-01-15',
-        checkOut: '2024-01-18',
-        status: 'confirmed',
-        total: 2400000
-      },
-      {
-        id: 2,
-        roomNumber: '205',
-        roomType: 'Suite',
-        checkIn: '2024-01-20',
-        checkOut: '2024-01-22',
-        status: 'pending',
-        total: 1800000
-      }
-    ])
+    fetchDashboardData()
   }, [])
+
+  const fetchDashboardData = async () => {
+    try {
+      // Gọi API thực tế để lấy thống kê dashboard khách hàng
+      const statsResponse = await api.get('/api/dashboard/customer/stats')
+      const bookingsResponse = await api.get('/api/phieu-dat/khach-hang/recent')
+
+      setStats(statsResponse.data.stats || {})
+      setRecentBookings(bookingsResponse.data.bookings || [])
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error)
+    }
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -67,7 +55,7 @@ const CustomerDashboard = () => {
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-800 rounded-lg p-6 text-white">
         <h1 className="text-3xl font-bold mb-2">
-          Chào mừng, {user?.hoTen || `${user?.ho} ${user?.ten}`}!
+          Chào mừng, {getUserDisplayName(user)}!
         </h1>
         <p className="text-primary-100">
           Quản lý đặt phòng và thông tin cá nhân của bạn

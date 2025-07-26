@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import Pagination from '../../components/common/Pagination'
 import toast from 'react-hot-toast'
+import { api } from '../../services/api'
 
 const AmenityManagement = () => {
   const [amenities, setAmenities] = useState([])
@@ -52,108 +53,14 @@ const AmenityManagement = () => {
   const fetchAmenities = async () => {
     try {
       setLoading(true)
-      // Mock data - sẽ thay thế bằng API call
-      const mockAmenities = [
-        {
-          id: 1,
-          tenTienNghi: 'WiFi miễn phí',
-          moTa: 'Internet tốc độ cao miễn phí trong toàn bộ khách sạn',
-          danhMuc: 'Technology',
-          loai: 'Cơ bản',
-          trangThai: 'active',
-          icon: 'Wifi',
-          thuTu: 1,
-          soPhongCo: 50,
-          danhGia: 4.8
-        },
-        {
-          id: 2,
-          tenTienNghi: 'Điều hòa không khí',
-          moTa: 'Hệ thống điều hòa hiện đại, điều khiển nhiệt độ tự động',
-          danhMuc: 'Comfort',
-          loai: 'Cơ bản',
-          trangThai: 'active',
-          icon: 'Wind',
-          thuTu: 2,
-          soPhongCo: 50,
-          danhGia: 4.7
-        },
-        {
-          id: 3,
-          tenTienNghi: 'TV màn hình phẳng',
-          moTa: 'TV LED 55 inch với các kênh truyền hình quốc tế',
-          danhMuc: 'Entertainment',
-          loai: 'Tiêu chuẩn',
-          trangThai: 'active',
-          icon: 'Tv',
-          thuTu: 3,
-          soPhongCo: 45,
-          danhGia: 4.5
-        },
-        {
-          id: 4,
-          tenTienNghi: 'Minibar',
-          moTa: 'Tủ lạnh mini với đồ uống và snack',
-          danhMuc: 'Food & Beverage',
-          loai: 'Cao cấp',
-          trangThai: 'active',
-          icon: 'Coffee',
-          thuTu: 4,
-          soPhongCo: 30,
-          danhGia: 4.3
-        },
-        {
-          id: 5,
-          tenTienNghi: 'Bãi đỗ xe',
-          moTa: 'Bãi đỗ xe miễn phí cho khách lưu trú',
-          danhMuc: 'Transportation',
-          loai: 'Cơ bản',
-          trangThai: 'active',
-          icon: 'Car',
-          thuTu: 5,
-          soPhongCo: 50,
-          danhGia: 4.6
-        },
-        {
-          id: 6,
-          tenTienNghi: 'Phòng gym',
-          moTa: 'Phòng tập gym với thiết bị hiện đại',
-          danhMuc: 'Wellness',
-          loai: 'Cao cấp',
-          trangThai: 'maintenance',
-          icon: 'Dumbbell',
-          thuTu: 6,
-          soPhongCo: 1,
-          danhGia: 4.2
-        },
-        {
-          id: 7,
-          tenTienNghi: 'Két an toàn',
-          moTa: 'Két sắt điện tử để bảo quản tài sản',
-          danhMuc: 'Security',
-          loai: 'Tiêu chuẩn',
-          trangThai: 'active',
-          icon: 'Star',
-          thuTu: 7,
-          soPhongCo: 40,
-          danhGia: 4.4
-        },
-        {
-          id: 8,
-          tenTienNghi: 'Máy pha cà phê',
-          moTa: 'Máy pha cà phê tự động với capsule miễn phí',
-          danhMuc: 'Food & Beverage',
-          loai: 'Cao cấp',
-          trangThai: 'active',
-          icon: 'Coffee',
-          thuTu: 8,
-          soPhongCo: 25,
-          danhGia: 4.7
-        }
-      ]
+      // Gọi API thực tế để lấy danh sách tiện nghi
+      const response = await api.get('/api/tien-nghi')
+      const amenityData = response.data.tienNghiList || []
 
-      setAmenities(mockAmenities)
-      setFilteredAmenities(mockAmenities)
+      setAmenities(amenityData)
+      setFilteredAmenities(amenityData)
+
+
     } catch (error) {
       console.error('Error fetching amenities:', error)
     } finally {

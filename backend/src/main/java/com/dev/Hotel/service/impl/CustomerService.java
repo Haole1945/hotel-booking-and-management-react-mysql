@@ -3,10 +3,8 @@ package com.dev.Hotel.service.impl;
 import com.dev.Hotel.dto.CustomerRegisterRequest;
 import com.dev.Hotel.dto.LoginRequest;
 import com.dev.Hotel.dto.Response;
-import com.dev.Hotel.entity.CustomerAuth;
 import com.dev.Hotel.entity.KhachHang;
 import com.dev.Hotel.exception.OurException;
-import com.dev.Hotel.repo.CustomerAuthRepository;
 import com.dev.Hotel.repo.KhachHangRepository;
 import com.dev.Hotel.service.interfac.ICustomerService;
 import com.dev.Hotel.utils.JWTUtils;
@@ -23,9 +21,6 @@ public class CustomerService implements ICustomerService {
 
     @Autowired
     private KhachHangRepository khachHangRepository;
-
-    @Autowired
-    private CustomerAuthRepository customerAuthRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -47,7 +42,7 @@ public class CustomerService implements ICustomerService {
             }
 
             // Check if email already exists
-            if (customerAuthRepository.existsByEmail(request.getEmail())) {
+            if (khachHangRepository.findByEmail(request.getEmail()).isPresent()) {
                 throw new OurException("Email đã được sử dụng");
             }
 
@@ -60,18 +55,10 @@ public class CustomerService implements ICustomerService {
             khachHang.setEmail(request.getEmail());
             khachHang.setDiaChi(request.getDiaChi());
             khachHang.setMaSoThue(request.getMaSoThue());
+            khachHang.setMatKhau(passwordEncoder.encode(request.getMatKhau()));
 
             // Save KhachHang
             KhachHang savedKhachHang = khachHangRepository.save(khachHang);
-
-            // Create CustomerAuth
-            CustomerAuth customerAuth = new CustomerAuth();
-            customerAuth.setCccd(request.getCccd());
-            customerAuth.setMatKhau(passwordEncoder.encode(request.getMatKhau()));
-            customerAuth.setKhachHang(savedKhachHang);
-
-            // Save CustomerAuth
-            customerAuthRepository.save(customerAuth);
 
             // Prepare response
             response.setStatusCode(200);
@@ -93,7 +80,7 @@ public class CustomerService implements ICustomerService {
         Response response = new Response();
         try {
             // Find customer by email
-            var customerAuth = customerAuthRepository.findByEmail(loginRequest.getEmail())
+            var khachHang = khachHangRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new OurException("Email hoặc mật khẩu không đúng"));
 
             // Authenticate customer
@@ -102,7 +89,7 @@ public class CustomerService implements ICustomerService {
             );
 
             // Generate JWT token using KhachHang email
-            var token = jwtUtils.generateTokenForCustomer(customerAuth.getKhachHang());
+            var token = jwtUtils.generateTokenForCustomer(khachHang);
 
             // Prepare response
             response.setStatusCode(200);
@@ -110,7 +97,7 @@ public class CustomerService implements ICustomerService {
             response.setToken(token);
             response.setRole("CUSTOMER");
             response.setExpirationTime("7 Days");
-            response.setKhachHang(Utils.mapKhachHangEntityToKhachHangDTO(customerAuth.getKhachHang()));
+            response.setKhachHang(Utils.mapKhachHangEntityToKhachHangDTO(khachHang));
 
         } catch (OurException e) {
             response.setStatusCode(400);

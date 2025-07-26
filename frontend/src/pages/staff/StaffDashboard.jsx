@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { api } from '../../services/api'
+import { getUserDisplayName } from '../../utils/userUtils'
 import {
   Calendar,
   Users,
@@ -32,63 +34,14 @@ const StaffDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Mock data - sẽ thay thế bằng API calls
-      setStats({
-        totalReservations: 45,
-        checkInsToday: 8,
-        checkOutsToday: 12,
-        occupiedRooms: 32,
-        availableRooms: 18,
-        pendingReservations: 5
-      })
+      // Gọi API thực tế để lấy thống kê dashboard lễ tân
+      const statsResponse = await api.get('/api/dashboard/staff/stats')
+      const activitiesResponse = await api.get('/api/dashboard/staff/activities')
+      const tasksResponse = await api.get('/api/dashboard/staff/tasks')
 
-      setTodayActivities([
-        {
-          id: 1,
-          type: 'checkin',
-          customerName: 'Nguyễn Văn A',
-          roomNumber: '101',
-          time: '14:00',
-          status: 'pending'
-        },
-        {
-          id: 2,
-          type: 'checkout',
-          customerName: 'Trần Thị B',
-          roomNumber: '205',
-          time: '11:00',
-          status: 'completed'
-        },
-        {
-          id: 3,
-          type: 'checkin',
-          customerName: 'Lê Văn C',
-          roomNumber: '301',
-          time: '15:30',
-          status: 'pending'
-        }
-      ])
-
-      setUpcomingTasks([
-        {
-          id: 1,
-          task: 'Xác nhận đặt phòng cho khách VIP',
-          priority: 'high',
-          dueTime: '16:00'
-        },
-        {
-          id: 2,
-          task: 'Chuẩn bị phòng 102 cho khách check-in',
-          priority: 'medium',
-          dueTime: '17:00'
-        },
-        {
-          id: 3,
-          task: 'Liên hệ khách hàng về yêu cầu đặc biệt',
-          priority: 'low',
-          dueTime: '18:00'
-        }
-      ])
+      setStats(statsResponse.data.stats || {})
+      setTodayActivities(activitiesResponse.data.activities || [])
+      setUpcomingTasks(tasksResponse.data.tasks || [])
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     }
@@ -133,7 +86,7 @@ const StaffDashboard = () => {
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-6 text-white">
         <h1 className="text-3xl font-bold mb-2">
-          Chào mừng, {user?.hoTen || `${user?.ho} ${user?.ten}`}!
+          Chào mừng, {getUserDisplayName(user)}!
         </h1>
         <p className="text-blue-100">
           Dashboard lễ tân - Quản lý đặt phòng và dịch vụ khách hàng

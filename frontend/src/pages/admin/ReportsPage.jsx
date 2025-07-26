@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { 
-  BarChart3, 
-  TrendingUp, 
+import { api } from '../../services/api'
+import {
+  BarChart3,
+  TrendingUp,
   TrendingDown,
-  DollarSign, 
-  Users, 
+  DollarSign,
+  Users,
   Building,
   Calendar,
   Download,
@@ -24,15 +25,11 @@ const ReportsPage = () => {
   const [reportType, setReportType] = useState('revenue')
   const [loading, setLoading] = useState(false)
   const [revenueData, setRevenueData] = useState({
-    total: 850000000,
-    growth: 12.5,
-    daily: 28333333,
-    monthly: 850000000,
-    byService: [
-      { name: 'Phòng', value: 650000000, percentage: 76.5 },
-      { name: 'Dịch vụ', value: 150000000, percentage: 17.6 },
-      { name: 'F&B', value: 50000000, percentage: 5.9 }
-    ]
+    total: 0,
+    growth: 0,
+    daily: 0,
+    monthly: 0,
+    byService: []
   })
 
   useEffect(() => {
@@ -40,11 +37,26 @@ const ReportsPage = () => {
   }, [dateRange, reportType])
 
   const fetchReportData = async () => {
-    setLoading(true)
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      setLoading(true)
+
+      // Gọi API để lấy dữ liệu báo cáo
+      const response = await api.get('/api/reports', {
+        params: {
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
+          type: reportType
+        }
+      })
+
+      if (response.data.success) {
+        setRevenueData(response.data.data || {})
+      }
+    } catch (error) {
+      console.error('Error fetching report data:', error)
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   const handleDateRangeChange = (field, value) => {

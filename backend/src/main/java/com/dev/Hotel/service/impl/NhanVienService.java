@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class NhanVienService implements INhanVienService {
     private AuthenticationManager authenticationManager;
     
     @Override
+    @Transactional(readOnly = true)
     public Response login(LoginRequest loginRequest) {
         Response response = new Response();
         try {
@@ -40,13 +42,16 @@ public class NhanVienService implements INhanVienService {
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
             
-            var nhanVien = nhanVienRepository.findByEmailOrUsername(loginRequest.getEmail(), loginRequest.getEmail())
+            var nhanVien = nhanVienRepository.findByEmailOrUsernameWithBoPhan(loginRequest.getEmail(), loginRequest.getEmail())
                 .orElseThrow(() -> new OurException("Nhân viên không tồn tại"));
             
             var token = jwtUtils.generateToken(nhanVien);
             response.setStatusCode(200);
             response.setToken(token);
-            response.setRole("EMPLOYEE"); // Default role for employees
+
+            // Determine role based on department
+            String role = determineUserRole(nhanVien);
+            response.setRole(role);
             response.setExpirationTime("7 Days");
             response.setMessage("Đăng nhập thành công");
             
@@ -59,7 +64,31 @@ public class NhanVienService implements INhanVienService {
         }
         return response;
     }
-    
+
+    /**
+     * Determine user role based on department
+     */
+    private String determineUserRole(NhanVien nhanVien) {
+        if (nhanVien.getBoPhan() == null) {
+            return "EMPLOYEE"; // Default role
+        }
+
+        String tenBoPhan = nhanVien.getBoPhan().getTenBp();
+        if (tenBoPhan == null) {
+            return "EMPLOYEE";
+        }
+
+        // Check for admin/management roles
+        if (tenBoPhan.toLowerCase().contains("quản lý") ||
+            tenBoPhan.toLowerCase().contains("admin") ||
+            tenBoPhan.toLowerCase().contains("giám đốc")) {
+            return "ADMIN";
+        }
+
+        // All other departments are employees
+        return "EMPLOYEE";
+    }
+
     @Override
     public Response register(NhanVien nhanVien) {
         Response response = new Response();

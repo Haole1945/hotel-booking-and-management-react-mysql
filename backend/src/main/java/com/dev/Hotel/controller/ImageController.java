@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/images")
-@CrossOrigin(origins = "*")
+
 public class ImageController {
 
     @GetMapping("/phong/{soPhong}")

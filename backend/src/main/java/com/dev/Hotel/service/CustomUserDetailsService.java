@@ -68,7 +68,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // Check for admin/management roles
         if (tenBoPhan.toLowerCase().contains("quản lý") ||
-            tenBoPhan.toLowerCase().contains("admin") ||
+            tenBoPhan.toLowerCase().contains("Admin") ||
             tenBoPhan.toLowerCase().contains("giám đốc")) {
             return "ADMIN";
         }

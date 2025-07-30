@@ -1,7 +1,11 @@
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\controller\AuthController.java
+D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\controller\DashboardController.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\controller\HealthController.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\controller\ImageController.java
+D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\controller\KhachHangController.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\controller\NhanVienController.java
+D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\controller\PhieuDatController.java
+D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\controller\PhieuThueController.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\controller\PhongController.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\dto\CtDichVuDTO.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\dto\CtPhieuThueDTO.java
@@ -56,9 +60,14 @@ D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\CustomUserDetailsService.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\ImageService.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\impl\CustomerService.java
+D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\impl\DashboardService.java
+D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\impl\KhachHangService.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\impl\NhanVienService.java
+D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\impl\PhieuDatService.java
+D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\impl\PhieuThueService.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\impl\PhongService.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\interfac\ICustomerService.java
+D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\interfac\IDashboardService.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\interfac\IHangPhongService.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\interfac\IKhachHangService.java
 D:\hotel-booking-and-management-react-mysql\backend\src\main\java\com\dev\Hotel\service\interfac\INhanVienService.java

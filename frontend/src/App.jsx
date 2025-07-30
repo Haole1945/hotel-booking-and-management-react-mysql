@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/common/ProtectedRoute'
-import BackendStatus from './components/common/BackendStatus'
 
 
 // Public pages
@@ -27,7 +26,8 @@ import StaffDashboard from './pages/staff/StaffDashboard'
 import ReservationManagement from './pages/staff/ReservationManagement'
 import CheckInPage from './pages/staff/CheckInPage'
 import CheckOutPage from './pages/staff/CheckOutPage'
-import CustomerManagement from './pages/staff/CustomerManagement'
+import WalkInCheckIn from './pages/staff/WalkInCheckIn'
+import QuickReports from './pages/staff/QuickReports'
 
 // Admin pages (Quản lý)
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -79,7 +79,8 @@ function App() {
             <Route path="reservations" element={<ReservationManagement />} />
             <Route path="checkin" element={<CheckInPage />} />
             <Route path="checkout" element={<CheckOutPage />} />
-            <Route path="customers" element={<CustomerManagement />} />
+            <Route path="walkin" element={<WalkInCheckIn />} />
+            <Route path="reports" element={<QuickReports />} />
           </Route>
 
           {/* Admin Routes (Quản lý) */}
@@ -116,7 +117,6 @@ function App() {
       </div>
 
       {/* Global Components */}
-      <BackendStatus />
       <Toaster
         position="top-right"
         toastOptions={{

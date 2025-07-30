@@ -36,5 +36,10 @@ public class Response {
     private List<PhieuThueDTO> phieuThueList;
     private List<HangPhongDTO> hangPhongList;
 
+    // Dashboard data
+    private Object stats;
+    private Object activities;
+    private Object tasks;
+
 
 }

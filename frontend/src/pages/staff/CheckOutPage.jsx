@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Search, UserX, CreditCard, Receipt, AlertCircle, CheckCircle, Calculator } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { api } from '../../services/api'
+import { rentalService } from '../../services/rentalService'
 
 const CheckOutPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -31,14 +31,36 @@ const CheckOutPage = () => {
   const fetchCheckedInGuests = async () => {
     try {
       setLoading(true)
-      // Gọi API thực tế thay vì mock data
-      const response = await api.get('/api/phieu-thue/checked-in')
-      const guestData = response.data.phieuThueList || []
+      // Lấy danh sách khách đang ở
+      const today = new Date().toISOString().split('T')[0]
+      const response = await rentalService.getCurrentStays()
+      const guestData = response.phieuThueList || []
 
-      setCheckedInGuests(guestData)
-      setFilteredGuests(guestData)
+      // Transform data to match frontend format
+      const transformedData = guestData.map(rental => ({
+        id: rental.idPt,
+        maPhieuThue: `PT${rental.idPt}`,
+        customerName: rental.hoTenKhachHang || 'N/A',
+        customerPhone: rental.sdtKhachHang || 'N/A',
+        customerEmail: rental.emailKhachHang || 'N/A',
+        cccd: rental.cccd,
+        checkIn: rental.ngayDen,
+        checkOut: rental.ngayDi,
+        roomNumber: 'TBD', // Will be from room details
+        roomType: 'Standard', // Default value
+        status: 'checkedin',
+        bookingId: rental.idPd,
+        employeeId: rental.idNv,
+        employeeName: rental.hoTenNhanVien,
+        chiTietPhieuThue: rental.chiTietPhieuThue || []
+      }))
+
+      setCheckedInGuests(transformedData)
+      setFilteredGuests(transformedData)
     } catch (error) {
       console.error('Error fetching checked-in guests:', error)
+      setCheckedInGuests([])
+      setFilteredGuests([])
     } finally {
       setLoading(false)
     }
@@ -143,33 +165,38 @@ const CheckOutPage = () => {
     try {
       setLoading(true)
 
-      // TODO: Call API to perform check-out
-      // const response = await checkOutService.performCheckOut(selectedGuest.id, checkOutData, bill)
+      // Call API to perform check-out
+      const response = await rentalService.checkOut(selectedGuest.id)
 
-      // Update guest status
-      setCheckedInGuests(prev =>
-        prev.filter(guest => guest.id !== selectedGuest.id)
-      )
+      if (response.statusCode === 200) {
+        toast.success(`Check-out thành công cho ${selectedGuest.customerName}!`)
 
-      toast.success(`Check-out thành công cho ${selectedGuest.customerName}!`)
-      setSelectedGuest(null)
-      setCheckOutData({
-        actualCheckOut: '',
-        additionalCharges: [],
-        damages: [],
-        notes: '',
-        paymentMethod: 'cash'
-      })
-      setBill({
-        roomCharges: 0,
-        serviceCharges: 0,
-        additionalCharges: 0,
-        damages: 0,
-        total: 0
-      })
+        // Update guest status - remove from checked-in list
+        setCheckedInGuests(prev =>
+          prev.filter(guest => guest.id !== selectedGuest.id)
+        )
 
-      // Refresh the list
-      fetchCheckedInGuests()
+        setSelectedGuest(null)
+        setCheckOutData({
+          actualCheckOut: '',
+          additionalCharges: [],
+          damages: [],
+          notes: '',
+          paymentMethod: 'cash'
+        })
+        setBill({
+          roomCharges: 0,
+          serviceCharges: 0,
+          additionalCharges: 0,
+          damages: 0,
+          total: 0
+        })
+
+        // Refresh the list
+        fetchCheckedInGuests()
+      } else {
+        toast.error(response.message || 'Có lỗi xảy ra khi check-out')
+      }
     } catch (error) {
       toast.error('Có lỗi xảy ra khi check-out')
       console.error('Check-out error:', error)

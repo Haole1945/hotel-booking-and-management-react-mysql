@@ -13,7 +13,7 @@ import {
   XCircle
 } from 'lucide-react'
 import Pagination from '../../components/common/Pagination'
-import { api } from '../../services/api'
+import { bookingService } from '../../services/bookingService'
 
 const ReservationManagement = () => {
   const [reservations, setReservations] = useState([])
@@ -36,15 +36,59 @@ const ReservationManagement = () => {
     try {
       setLoading(true)
       // Gọi API thực tế thay vì mock data
-      const response = await api.get('/api/phieu-dat')
-      const reservationData = response.data.phieuDatList || []
+      const response = await bookingService.getAllBookings()
+      const reservationData = response.phieuDatList || []
 
-      setReservations(reservationData)
-      setFilteredReservations(reservationData)
+      // Transform data to match frontend format
+      const transformedData = reservationData.map(booking => ({
+        id: booking.idPd,
+        maPhieuThue: `PD${booking.idPd}`,
+        customerName: booking.hoTenKhachHang || 'N/A',
+        customerPhone: booking.sdtKhachHang || 'N/A',
+        roomNumber: 'TBD', // Will be assigned during check-in
+        roomType: 'Standard', // Default value
+        checkIn: booking.ngayBdThue,
+        checkOut: booking.ngayDi,
+        status: mapBackendStatusToFrontend(booking.trangThai),
+        total: booking.soTienCoc || 0,
+        createdAt: booking.ngayDat,
+        cccd: booking.cccd,
+        employeeId: booking.idNv,
+        employeeName: booking.hoTenNhanVien
+      }))
+
+      setReservations(transformedData)
+      setFilteredReservations(transformedData)
     } catch (error) {
       console.error('Error fetching reservations:', error)
+      setReservations([])
+      setFilteredReservations([])
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Map backend status to frontend status
+  const mapBackendStatusToFrontend = (backendStatus) => {
+    switch (backendStatus) {
+      case 'Chờ xác nhận': return 'pending'
+      case 'Đã xác nhận': return 'confirmed'
+      case 'Đã nhận phòng': return 'checkedin'
+      case 'Đã hủy': return 'cancelled'
+      case 'Hoàn thành': return 'checkedout'
+      default: return 'pending'
+    }
+  }
+
+  // Map frontend status to backend status
+  const mapFrontendStatusToBackend = (frontendStatus) => {
+    switch (frontendStatus) {
+      case 'pending': return 'Chờ xác nhận'
+      case 'confirmed': return 'Đã xác nhận'
+      case 'checkedin': return 'Đã nhận phòng'
+      case 'cancelled': return 'Đã hủy'
+      case 'checkedout': return 'Hoàn thành'
+      default: return 'Chờ xác nhận'
     }
   }
 
@@ -135,7 +179,17 @@ const ReservationManagement = () => {
 
   const handleStatusUpdate = async (reservationId, newStatus) => {
     try {
-      // TODO: Call API to update status
+      const backendStatus = mapFrontendStatusToBackend(newStatus)
+
+      if (newStatus === 'confirmed') {
+        await bookingService.confirmBooking(reservationId)
+      } else if (newStatus === 'cancelled') {
+        await bookingService.cancelBooking(reservationId, 'Hủy bởi lễ tân')
+      } else {
+        await bookingService.updateBookingStatus(reservationId, backendStatus)
+      }
+
+      // Update local state
       setReservations(prev =>
         prev.map(reservation =>
           reservation.id === reservationId
@@ -148,6 +202,7 @@ const ReservationManagement = () => {
       applyFilters(filters)
     } catch (error) {
       console.error('Error updating reservation status:', error)
+      alert('Có lỗi xảy ra khi cập nhật trạng thái đặt phòng')
     }
   }
 

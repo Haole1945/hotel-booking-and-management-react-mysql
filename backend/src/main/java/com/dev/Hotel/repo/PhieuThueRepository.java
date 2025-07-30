@@ -32,4 +32,14 @@ public interface PhieuThueRepository extends JpaRepository<PhieuThue, Integer> {
     
     @Query("SELECT pt FROM PhieuThue pt WHERE pt.ngayDen <= :currentDate AND pt.ngayDi >= :currentDate")
     List<PhieuThue> findCurrentStays(@Param("currentDate") LocalDate currentDate);
+
+    // Dashboard specific queries
+    @Query("SELECT COUNT(pt) FROM PhieuThue pt WHERE pt.ngayDen = :date")
+    long countByNgayNhanPhong(@Param("date") LocalDate date);
+
+    @Query("SELECT COUNT(pt) FROM PhieuThue pt WHERE pt.ngayDi = :date")
+    long countByNgayTraPhong(@Param("date") LocalDate date);
+
+    @Query("SELECT pt FROM PhieuThue pt WHERE pt.ngayDi = :date")
+    List<PhieuThue> findByNgayTraPhong(@Param("date") LocalDate date);
 }

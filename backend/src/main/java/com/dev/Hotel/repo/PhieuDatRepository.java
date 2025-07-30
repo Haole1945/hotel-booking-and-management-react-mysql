@@ -28,4 +28,20 @@ public interface PhieuDatRepository extends JpaRepository<PhieuDat, Integer> {
     
     @Query("SELECT pd FROM PhieuDat pd WHERE pd.ngayBdThue >= :date AND pd.trangThai = :trangThai")
     List<PhieuDat> findUpcomingBookings(@Param("date") LocalDate date, @Param("trangThai") String trangThai);
+
+    // Dashboard specific queries
+    @Query("SELECT COUNT(pd) FROM PhieuDat pd WHERE pd.ngayDat = :date")
+    long countByNgayDat(@Param("date") LocalDate date);
+
+    @Query("SELECT COUNT(pd) FROM PhieuDat pd WHERE pd.ngayBdThue = :date")
+    long countByNgayBdThue(@Param("date") LocalDate date);
+
+    @Query("SELECT COUNT(pd) FROM PhieuDat pd WHERE pd.trangThai = :trangThai")
+    long countByTrangThai(@Param("trangThai") String trangThai);
+
+    @Query("SELECT COUNT(pd) FROM PhieuDat pd WHERE pd.ngayBdThue = :date AND pd.trangThai = :trangThai")
+    long countByNgayBdThueAndTrangThai(@Param("date") LocalDate date, @Param("trangThai") String trangThai);
+
+    @Query("SELECT pd FROM PhieuDat pd WHERE pd.ngayBdThue = :date AND pd.trangThai = :trangThai ORDER BY pd.ngayDat ASC")
+    List<PhieuDat> findByNgayBdThueAndTrangThai(@Param("date") LocalDate date, @Param("trangThai") String trangThai);
 }

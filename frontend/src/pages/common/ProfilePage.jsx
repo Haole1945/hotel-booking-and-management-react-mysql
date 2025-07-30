@@ -36,8 +36,8 @@ const ProfilePage = () => {
       setLoading(true)
 
       const endpoint = user.role === 'CUSTOMER'
-        ? '/api/khach-hang/profile'
-        : '/api/nhan-vien/profile'
+        ? '/api/khachhang/profile'
+        : '/api/nhanvien/profile'
 
       const response = await api.get(endpoint)
 
@@ -104,7 +104,7 @@ const ProfilePage = () => {
       
       const endpoint = user.role === 'CUSTOMER' 
         ? '/api/khach-hang/update-profile' 
-        : '/api/nhan-vien/update-profile'
+        : '/api/nhanvien/update-profile'
       
       const response = await api.put(endpoint, formData)
       

@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { Home, Calendar, UserCheck, UserX, Users } from 'lucide-react'
+import { Home, Calendar, UserCheck, UserX, Users, UserPlus, BarChart3 } from 'lucide-react'
 
 const StaffSidebar = () => {
   const menuItems = [
@@ -25,10 +25,16 @@ const StaffSidebar = () => {
       icon: UserX,
       label: 'Check-out'
     },
+
     {
-      path: '/staff/customers',
-      icon: Users,
-      label: 'Quản lý khách hàng'
+      path: '/staff/walkin',
+      icon: UserPlus,
+      label: 'Walk-in Check-in'
+    },
+    {
+      path: '/staff/reports',
+      icon: BarChart3,
+      label: 'Báo cáo nhanh'
     }
   ]
 

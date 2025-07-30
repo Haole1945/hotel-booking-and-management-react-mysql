@@ -19,7 +19,7 @@ import com.dev.Hotel.utils.JWTUtils;
 
 import java.io.IOException;
 
-@Component
+//@Component
 public class JWTAuthFilter extends OncePerRequestFilter {
 
     @Autowired

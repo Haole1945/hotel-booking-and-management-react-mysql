@@ -47,7 +47,7 @@ const RoomManagement = () => {
     try {
       setLoading(true)
       // Gọi API để lấy danh sách phòng
-      const response = await api.get('/api/phong')
+      const response = await api.get('/api/phong/all')
       const roomData = response.data.phongList || []
 
       setRooms(roomData)
@@ -177,7 +177,7 @@ const RoomManagement = () => {
         toast.success('Cập nhật phòng thành công!')
       } else {
         // Gọi API để tạo phòng mới
-        const response = await api.post('/api/phong', {
+        const response = await api.post('/api/phong/create', {
           ...roomForm,
           tang: parseInt(roomForm.tang)
         })

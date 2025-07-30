@@ -12,43 +12,42 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/phong")
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/phong")
 public class PhongController {
     
     @Autowired
     private IPhongService phongService;
     
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+    //@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     public ResponseEntity<Response> getAllPhong() {
         Response response = phongService.getAllPhong();
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
     
     @GetMapping("/get-by-id/{soPhong}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+   // @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     public ResponseEntity<Response> getPhongById(@PathVariable("soPhong") String soPhong) {
         Response response = phongService.getPhongById(soPhong);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
     
     @PostMapping("/create")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Response> createPhong(@RequestBody Phong phong) {
         Response response = phongService.createPhong(phong);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
     
     @PutMapping("/update/{soPhong}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+   // @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Response> updatePhong(@PathVariable("soPhong") String soPhong, @RequestBody Phong phong) {
         Response response = phongService.updatePhong(soPhong, phong);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
     
     @DeleteMapping("/delete/{soPhong}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+  //  @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Response> deletePhong(@PathVariable("soPhong") String soPhong) {
         Response response = phongService.deletePhong(soPhong);
         return ResponseEntity.status(response.getStatusCode()).body(response);
@@ -57,6 +56,27 @@ public class PhongController {
     @GetMapping("/available")
     public ResponseEntity<Response> getAvailableRooms() {
         Response response = phongService.getAvailableRooms();
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @GetMapping("/occupied")
+    //@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+    public ResponseEntity<Response> getOccupiedRooms() {
+        Response response = phongService.getOccupiedRooms();
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @GetMapping("/maintenance")
+    //@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+    public ResponseEntity<Response> getMaintenanceRooms() {
+        Response response = phongService.getMaintenanceRooms();
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @GetMapping("/cleaning")
+    //@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+    public ResponseEntity<Response> getCleaningRooms() {
+        Response response = phongService.getCleaningRooms();
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
     
@@ -69,28 +89,28 @@ public class PhongController {
     }
     
     @GetMapping("/by-hang-phong/{idHangPhong}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+   // @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     public ResponseEntity<Response> getPhongByHangPhong(@PathVariable("idHangPhong") Integer idHangPhong) {
         Response response = phongService.getPhongByHangPhong(idHangPhong);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
     
     @GetMapping("/by-tang/{tang}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+    //@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     public ResponseEntity<Response> getPhongByTang(@PathVariable("tang") Integer tang) {
         Response response = phongService.getPhongByTang(tang);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
     
     @GetMapping("/by-trang-thai/{idTrangThai}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+    //PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     public ResponseEntity<Response> getPhongByTrangThai(@PathVariable("idTrangThai") String idTrangThai) {
         Response response = phongService.getPhongByTrangThai(idTrangThai);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
     
     @PutMapping("/update-status/{soPhong}")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+    //@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     public ResponseEntity<Response> updateRoomStatus(
             @PathVariable("soPhong") String soPhong,
             @RequestParam("idTrangThai") String idTrangThai) {
@@ -117,7 +137,7 @@ public class PhongController {
     }
     
     @GetMapping("/filter")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
+    //@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('EMPLOYEE')")
     public ResponseEntity<Response> filterRooms(
             @RequestParam(value = "tang", required = false) Integer tang,
             @RequestParam(value = "idHangPhong", required = false) String idHangPhong,

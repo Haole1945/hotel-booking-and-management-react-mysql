@@ -58,7 +58,7 @@ const StaffManagement = () => {
     try {
       setLoading(true)
       // Gọi API thực tế thay vì mock data
-      const response = await api.get('/api/nhan-vien')
+      const response = await api.get('/api/nhanvien')
       const staffData = response.data.nhanVienList || []
 
       setStaff(staffData)

@@ -29,6 +29,7 @@ public interface IPhieuDatService {
     Response searchPhieuDat(String keyword);
     Response getUpcomingBookings(LocalDate date);
     Response getTodayBookings();
+    Response getConfirmedBookings();
     
     // Validation
     Response validateBookingDates(LocalDate checkIn, LocalDate checkOut);

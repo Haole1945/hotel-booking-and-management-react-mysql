@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { api } from '../../services/api'
+import { dashboardService } from '../../services/dashboardService'
 import { getUserDisplayName } from '../../utils/userUtils'
+import StaffStatsCards from '../../components/staff/StaffStatsCards'
 import {
   Calendar,
-  Users,
   UserCheck,
   UserX,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  TrendingUp,
-  Building
+  UserPlus,
+  BarChart3
 } from 'lucide-react'
 
 const StaffDashboard = () => {
@@ -33,53 +30,83 @@ const StaffDashboard = () => {
   }, [])
 
   const fetchDashboardData = async () => {
+    console.log('🔄 Fetching dashboard data...')
+
+    // Fetch stats API (priority - this one works)
+    let statsResponse = null
     try {
-      // Gọi API thực tế để lấy thống kê dashboard lễ tân
-      const statsResponse = await api.get('/api/dashboard/staff/stats')
-      const activitiesResponse = await api.get('/api/dashboard/staff/activities')
-      const tasksResponse = await api.get('/api/dashboard/staff/tasks')
-
-      setStats(statsResponse.data.stats || {})
-      setTodayActivities(activitiesResponse.data.activities || [])
-      setUpcomingTasks(tasksResponse.data.tasks || [])
+      statsResponse = await dashboardService.getStaffStats()
+      console.log('✅ Stats API successful:', statsResponse)
     } catch (error) {
-      console.error('Error fetching dashboard data:', error)
+      console.error('❌ Stats API failed:', error)
     }
+
+    // Fetch check-ins API (optional - may fail)
+    let checkInsResponse = { phieuDatList: [] }
+    try {
+      checkInsResponse = await dashboardService.getTodayCheckIns()
+      console.log('✅ Check-ins API successful')
+    } catch (error) {
+      console.error('⚠️ Check-ins API failed (using empty data):', error.message)
+    }
+
+    // Fetch check-outs API (optional - may fail)
+    let checkOutsResponse = { phieuThueList: [] }
+    try {
+      checkOutsResponse = await dashboardService.getTodayCheckOuts()
+      console.log('✅ Check-outs API successful')
+    } catch (error) {
+      console.error('⚠️ Check-outs API failed (using empty data):', error.message)
+    }
+
+    // Process stats data if available
+    if (statsResponse) {
+      const apiStats = statsResponse.stats || statsResponse
+      console.log('Raw statsResponse:', statsResponse)
+      console.log('Extracted apiStats:', apiStats)
+
+      const newStats = {
+        totalReservations: apiStats.confirmedBookings || 0, // Đặt phòng đã xác nhận chưa check-in
+        checkInsToday: apiStats.todayCheckIns || 0, // Từ API stats
+        checkOutsToday: apiStats.todayCheckOuts || 0, // Từ API stats
+        occupiedRooms: apiStats.occupiedRooms || 0, // Phòng đang có khách (từ API)
+        availableRooms: apiStats.availableRooms || 0, // Phòng trống (từ API)
+        cleaningRooms: apiStats.cleaningRooms || 0, // Phòng đang dọn dẹp (từ API)
+        maintenanceRooms: apiStats.maintenanceRooms || 0, // Phòng đang bảo trì (từ API)
+        todayBookings: apiStats.todayBookings || 0, // Phiếu đặt mới hôm nay (từ API)
+        pendingReservations: apiStats.pendingBookings || 0, // Đặt phòng chờ xác nhận
+        totalRooms: apiStats.totalRooms || 0, // Tổng số phòng
+        occupancyRate: apiStats.occupancyRate || 0 // Tỷ lệ lấp đầy
+      }
+
+      console.log('Setting stats to:', newStats)
+      setStats(newStats)
+    } else {
+      // Fallback if stats API fails
+      console.log('⚠️ Using fallback stats (all zeros)')
+      setStats({
+        totalReservations: 0,
+        checkInsToday: 0,
+        checkOutsToday: 0,
+        occupiedRooms: 0,
+        availableRooms: 0,
+        cleaningRooms: 0,
+        maintenanceRooms: 0,
+        todayBookings: 0,
+        pendingReservations: 0,
+        totalRooms: 0,
+        occupancyRate: 0
+      })
+    }
+
+    // Set list data (even if empty)
+    setTodayActivities(checkInsResponse.activities || [])
+    setUpcomingTasks(checkOutsResponse.activities || [])
+
+    console.log('🏁 Dashboard data fetch completed')
   }
 
-  const getActivityIcon = (type) => {
-    switch (type) {
-      case 'checkin': return <UserCheck className="w-4 h-4 text-green-600" />
-      case 'checkout': return <UserX className="w-4 h-4 text-blue-600" />
-      default: return <Clock className="w-4 h-4 text-gray-600" />
-    }
-  }
 
-  const getActivityText = (type) => {
-    switch (type) {
-      case 'checkin': return 'Check-in'
-      case 'checkout': return 'Check-out'
-      default: return 'Hoạt động'
-    }
-  }
-
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high': return 'text-red-600 bg-red-100'
-      case 'medium': return 'text-yellow-600 bg-yellow-100'
-      case 'low': return 'text-green-600 bg-green-100'
-      default: return 'text-gray-600 bg-gray-100'
-    }
-  }
-
-  const getPriorityText = (priority) => {
-    switch (priority) {
-      case 'high': return 'Cao'
-      case 'medium': return 'Trung bình'
-      case 'low': return 'Thấp'
-      default: return 'Bình thường'
-    }
-  }
 
   return (
     <div className="space-y-6">
@@ -94,82 +121,10 @@ const StaffDashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-blue-100 rounded-full">
-              <Calendar className="w-6 h-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Tổng đặt phòng</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalReservations}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-green-100 rounded-full">
-              <UserCheck className="w-6 h-6 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Check-in hôm nay</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.checkInsToday}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-purple-100 rounded-full">
-              <UserX className="w-6 h-6 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Check-out hôm nay</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.checkOutsToday}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-red-100 rounded-full">
-              <Building className="w-6 h-6 text-red-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Phòng đã thuê</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.occupiedRooms}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-emerald-100 rounded-full">
-              <CheckCircle className="w-6 h-6 text-emerald-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Phòng trống</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.availableRooms}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-yellow-100 rounded-full">
-              <AlertCircle className="w-6 h-6 text-yellow-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Chờ xác nhận</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.pendingReservations}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StaffStatsCards stats={stats} />
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Link to="/staff/reservations" className="card hover:shadow-lg transition-shadow">
           <div className="text-center">
             <div className="p-4 bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
@@ -200,76 +155,103 @@ const StaffDashboard = () => {
           </div>
         </Link>
 
-        <Link to="/staff/customers" className="card hover:shadow-lg transition-shadow">
+
+
+        <Link to="/staff/walkin" className="card hover:shadow-lg transition-shadow">
           <div className="text-center">
-            <div className="p-4 bg-orange-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <Users className="w-8 h-8 text-orange-600" />
+            <div className="p-4 bg-teal-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <UserPlus className="w-8 h-8 text-teal-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Quản lý khách hàng</h3>
-            <p className="text-gray-600">Thông tin và lịch sử khách hàng</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Walk-in Check-in</h3>
+            <p className="text-gray-600">Check-in khách không đặt trước</p>
+          </div>
+        </Link>
+
+        <Link to="/staff/reports" className="card hover:shadow-lg transition-shadow">
+          <div className="text-center">
+            <div className="p-4 bg-indigo-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <BarChart3 className="w-8 h-8 text-indigo-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Báo cáo nhanh</h3>
+            <p className="text-gray-600">Thống kê và báo cáo hôm nay</p>
           </div>
         </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Today's Activities */}
+        {/* Today's Check-ins */}
         <div className="card">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Hoạt động hôm nay</h2>
-            <Link to="/staff/reservations" className="text-blue-600 hover:text-blue-700 font-medium">
+            <h2 className="text-xl font-bold text-gray-900">Khách hàng sẽ tới hôm nay</h2>
+            <Link to="/staff/checkin" className="text-blue-600 hover:text-blue-700 font-medium">
               Xem tất cả
             </Link>
           </div>
 
           <div className="space-y-4">
-            {todayActivities.map((activity) => (
-              <div key={activity.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  {getActivityIcon(activity.type)}
-                  <div>
-                    <div className="font-medium text-gray-900">
-                      {getActivityText(activity.type)} - {activity.customerName}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      Phòng {activity.roomNumber} • {activity.time}
+            {todayActivities.length > 0 ? (
+              todayActivities.map((activity, index) => (
+                <div key={activity.id || activity.idPd || index} className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <UserCheck className="w-5 h-5 text-green-600" />
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        {activity.customerName || activity.hoTenKhachHang || 'Khách hàng'}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {activity.roomNumber ? `Phòng ${activity.roomNumber}` : 'Chờ phân phòng'} • {activity.checkInTime || activity.ngayBdThue || 'Chưa xác định'}
+                      </div>
                     </div>
                   </div>
+                  <span className="px-2 py-1 text-xs font-semibold rounded-full text-green-600 bg-green-100">
+                    Check-in
+                  </span>
                 </div>
-                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                  activity.status === 'completed'
-                    ? 'text-green-600 bg-green-100'
-                    : 'text-yellow-600 bg-yellow-100'
-                }`}>
-                  {activity.status === 'completed' ? 'Hoàn thành' : 'Chờ xử lý'}
-                </span>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <UserCheck className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <p>Không có khách check-in hôm nay</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
-        {/* Upcoming Tasks */}
+        {/* Today's Check-outs */}
         <div className="card">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Công việc sắp tới</h2>
-            <span className="text-sm text-gray-500">{upcomingTasks.length} công việc</span>
+            <h2 className="text-xl font-bold text-gray-900">Khách hàng trả phòng hôm nay</h2>
+            <Link to="/staff/checkout" className="text-blue-600 hover:text-blue-700 font-medium">
+              Xem tất cả
+            </Link>
           </div>
 
           <div className="space-y-4">
-            {upcomingTasks.map((task) => (
-              <div key={task.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900 mb-1">
-                    {task.task}
+            {upcomingTasks.length > 0 ? (
+              upcomingTasks.map((task, index) => (
+                <div key={task.id || task.idPt || index} className="flex items-center justify-between p-4 bg-orange-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <UserX className="w-5 h-5 text-orange-600" />
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        {task.customerName || task.hoTenKhachHang || 'Khách hàng'}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        CCCD: {task.cccd} • Ngày đi: {task.ngayDi} • {task.soNgayThue} ngày
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-500">
-                    Thời hạn: {task.dueTime}
-                  </div>
+                  <span className="px-2 py-1 text-xs font-semibold rounded-full text-orange-600 bg-orange-100">
+                    Check-out
+                  </span>
                 </div>
-                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(task.priority)}`}>
-                  {getPriorityText(task.priority)}
-                </span>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <UserX className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <p>Không có khách check-out hôm nay</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

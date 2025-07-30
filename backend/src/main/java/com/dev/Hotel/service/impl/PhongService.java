@@ -2,16 +2,20 @@ package com.dev.Hotel.service.impl;
 
 import com.dev.Hotel.dto.Response;
 import com.dev.Hotel.entity.Phong;
+import com.dev.Hotel.entity.PhieuDat;
 import com.dev.Hotel.exception.OurException;
 import com.dev.Hotel.repo.PhongRepository;
 import com.dev.Hotel.repo.HangPhongRepository;
 import com.dev.Hotel.repo.TrangThaiRepository;
+import com.dev.Hotel.repo.PhieuThueRepository;
+import com.dev.Hotel.repo.PhieuDatRepository;
 import com.dev.Hotel.service.interfac.IPhongService;
 import com.dev.Hotel.utils.EntityDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +29,12 @@ public class PhongService implements IPhongService {
     
     @Autowired
     private TrangThaiRepository trangThaiRepository;
+
+    @Autowired
+    private PhieuThueRepository phieuThueRepository;
+
+    @Autowired
+    private PhieuDatRepository phieuDatRepository;
     
     @Override
     public Response getAllPhong() {
@@ -146,14 +156,73 @@ public class PhongService implements IPhongService {
         }
         return response;
     }
+
+    public Response getOccupiedRooms() {
+        Response response = new Response();
+        try {
+            List<Phong> occupiedRooms = phongRepository.findOccupiedRooms();
+            response.setStatusCode(200);
+            response.setMessage("Thành công");
+            response.setPhongList(EntityDTOMapper.mapPhongListToDTO(occupiedRooms));
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setMessage("Lỗi khi lấy danh sách phòng đã có khách: " + e.getMessage());
+        }
+        return response;
+    }
+
+    public Response getMaintenanceRooms() {
+        Response response = new Response();
+        try {
+            List<Phong> maintenanceRooms = phongRepository.findMaintenanceRooms();
+            response.setStatusCode(200);
+            response.setMessage("Thành công");
+            response.setPhongList(EntityDTOMapper.mapPhongListToDTO(maintenanceRooms));
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setMessage("Lỗi khi lấy danh sách phòng đang bảo trì: " + e.getMessage());
+        }
+        return response;
+    }
+
+    public Response getCleaningRooms() {
+        Response response = new Response();
+        try {
+            List<Phong> cleaningRooms = phongRepository.findCleaningRooms();
+            response.setStatusCode(200);
+            response.setMessage("Thành công");
+            response.setPhongList(EntityDTOMapper.mapPhongListToDTO(cleaningRooms));
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setMessage("Lỗi khi lấy danh sách phòng đang dọn dẹp: " + e.getMessage());
+        }
+        return response;
+    }
     
     @Override
     public Response getAvailableRoomsByDateRange(LocalDate checkIn, LocalDate checkOut) {
         Response response = new Response();
         try {
-            // This would require complex query to check room availability in date range
-            // For now, return available rooms
-            List<Phong> availableRooms = phongRepository.findAvailableRooms();
+            if (checkIn == null || checkOut == null) {
+                // Nếu không có ngày, trả về tất cả phòng trống
+                List<Phong> availableRooms = phongRepository.findAvailableRooms();
+                response.setStatusCode(200);
+                response.setMessage("Thành công");
+                response.setPhongList(EntityDTOMapper.mapPhongListToDTO(availableRooms));
+                return response;
+            }
+
+            // Lấy tất cả phòng
+            List<Phong> allRooms = phongRepository.findAll();
+            List<Phong> availableRooms = new ArrayList<>();
+
+            for (Phong phong : allRooms) {
+                // Kiểm tra phòng có trống trong khoảng thời gian không
+                if (isRoomAvailableInDateRange(phong.getSoPhong(), checkIn, checkOut)) {
+                    availableRooms.add(phong);
+                }
+            }
+
             response.setStatusCode(200);
             response.setMessage("Thành công");
             response.setPhongList(EntityDTOMapper.mapPhongListToDTO(availableRooms));
@@ -314,5 +383,37 @@ public class PhongService implements IPhongService {
             response.setMessage("Lỗi khi kiểm tra tình trạng phòng: " + e.getMessage());
         }
         return response;
+    }
+
+    // Helper method để kiểm tra phòng có trống trong khoảng thời gian không
+    private boolean isRoomAvailableInDateRange(String soPhong, LocalDate checkIn, LocalDate checkOut) {
+        try {
+            // Kiểm tra phòng có tồn tại không
+            Phong phong = phongRepository.findById(soPhong).orElse(null);
+            if (phong == null) {
+                return false;
+            }
+
+            // Kiểm tra trạng thái phòng hiện tại
+            String trangThai = phong.getTrangThai().getTenTrangThai();
+            if (!"Trống".equals(trangThai)) {
+                return false;
+            }
+
+            // Kiểm tra xem có phiếu đặt nào đã xác nhận trong khoảng thời gian này không
+            List<PhieuDat> conflictingBookings = phieuDatRepository.findByTrangThai("Đã xác nhận");
+            for (PhieuDat booking : conflictingBookings) {
+                if (booking.getNgayBdThue() != null && booking.getNgayDi() != null) {
+                    // Kiểm tra overlap: (start1 <= end2) && (start2 <= end1)
+                    if (booking.getNgayBdThue().isBefore(checkOut) && checkIn.isBefore(booking.getNgayDi())) {
+                        return false; // Có conflict
+                    }
+                }
+            }
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

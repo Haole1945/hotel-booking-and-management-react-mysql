@@ -16,6 +16,9 @@ public interface IPhongService {
     
     // Business logic
     Response getAvailableRooms();
+    Response getOccupiedRooms();
+    Response getMaintenanceRooms();
+    Response getCleaningRooms();
     Response getAvailableRoomsByDateRange(LocalDate checkIn, LocalDate checkOut);
     Response getPhongByHangPhong(Integer idHangPhong);
     Response getPhongByTang(Integer tang);

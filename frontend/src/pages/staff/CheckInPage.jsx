@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Search, UserCheck, Calendar, Clock, AlertCircle, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { api } from '../../services/api'
+import { bookingService } from '../../services/bookingService'
+import { rentalService } from '../../services/rentalService'
 
 const CheckInPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -16,21 +17,43 @@ const CheckInPage = () => {
   })
 
   useEffect(() => {
-    fetchTodayReservations()
+    fetchConfirmedReservations()
   }, [])
 
-  const fetchTodayReservations = async () => {
+  const fetchConfirmedReservations = async () => {
     try {
       setLoading(true)
-      // Gọi API thực tế thay vì mock data
-      const today = new Date().toISOString().split('T')[0]
-      const response = await api.get(`/api/phieu-dat/ngay-den/${today}`)
-      const reservationData = response.data.phieuDatList || []
+      // Lấy tất cả đặt phòng đã được xác nhận, sắp xếp theo thời gian
+      const response = await bookingService.getConfirmedBookings()
+      const reservationData = response.phieuDatList || []
 
-      setReservations(reservationData)
-      setFilteredReservations(reservationData)
+      // Tất cả đặt phòng đã được filter ở backend (chỉ lấy "Đã xác nhận")
+      const confirmedReservations = reservationData
+
+      // Transform data to match frontend format
+      const transformedData = confirmedReservations.map(booking => ({
+        id: booking.idPd,
+        maPhieuThue: `PD${booking.idPd}`,
+        customerName: booking.hoTenKhachHang || 'N/A',
+        customerPhone: booking.sdtKhachHang || 'N/A',
+        customerEmail: booking.emailKhachHang || 'N/A',
+        cccd: booking.cccd,
+        checkIn: booking.ngayBdThue,
+        checkOut: booking.ngayDi,
+        status: 'confirmed',
+        roomNumber: 'TBD', // Will be assigned during check-in
+        roomType: 'Standard', // Default value
+        total: booking.soTienCoc || 0,
+        employeeId: booking.idNv,
+        employeeName: booking.hoTenNhanVien
+      }))
+
+      setReservations(transformedData)
+      setFilteredReservations(transformedData)
     } catch (error) {
       console.error('Error fetching today reservations:', error)
+      setReservations([])
+      setFilteredReservations([])
     } finally {
       setLoading(false)
     }
@@ -74,28 +97,33 @@ const CheckInPage = () => {
     try {
       setLoading(true)
 
-      // TODO: Call API to perform check-in
-      // const response = await checkInService.performCheckIn(selectedReservation.id, checkInData)
+      // Call API to perform check-in from booking
+      const response = await rentalService.checkInFromBooking(selectedReservation.id)
 
-      // Update reservation status
-      setReservations(prev =>
-        prev.map(reservation =>
-          reservation.id === selectedReservation.id
-            ? { ...reservation, status: 'checkedin' }
-            : reservation
+      if (response.statusCode === 200) {
+        toast.success(`Check-in thành công cho ${selectedReservation.customerName}!`)
+
+        // Update reservation status
+        setReservations(prev =>
+          prev.map(reservation =>
+            reservation.id === selectedReservation.id
+              ? { ...reservation, status: 'checkedin' }
+              : reservation
+          )
         )
-      )
 
-      toast.success(`Check-in thành công cho ${selectedReservation.customerName}!`)
-      setSelectedReservation(null)
-      setCheckInData({
-        actualCheckIn: '',
-        notes: '',
-        specialRequests: ''
-      })
+        setSelectedReservation(null)
+        setCheckInData({
+          actualCheckIn: '',
+          notes: '',
+          specialRequests: ''
+        })
 
-      // Refresh the list
-      fetchTodayReservations()
+        // Refresh the list
+        fetchConfirmedReservations()
+      } else {
+        toast.error(response.message || 'Có lỗi xảy ra khi check-in')
+      }
     } catch (error) {
       toast.error('Có lỗi xảy ra khi check-in')
       console.error('Check-in error:', error)
@@ -125,7 +153,7 @@ const CheckInPage = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Check-in khách hàng</h1>
-        <p className="text-gray-600 mt-2">Thực hiện check-in cho khách hàng có đặt phòng</p>
+        <p className="text-gray-600 mt-2">Thực hiện check-in cho khách hàng có đặt phòng đã được xác nhận</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -133,7 +161,7 @@ const CheckInPage = () => {
         <div className="card">
           <div className="flex items-center mb-4">
             <Search className="w-5 h-5 text-gray-500 mr-2" />
-            <h2 className="text-xl font-semibold text-gray-900">Tìm kiếm đặt phòng</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Danh sách đặt phòng đã xác nhận</h2>
           </div>
 
           {/* Search Input */}

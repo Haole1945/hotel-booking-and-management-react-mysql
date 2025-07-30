@@ -1,0 +1,41 @@
+Mục tiêu đề tài: Xây dựng chương trình quản lý Khách Sạn
+•	Quản lý nhân viên
+•	Ghi nhận thông tin khách hàng thuê phòng
+•	Ghi nhận đăng ký đặt phòng
+•	Ghi nhận thuê phòng (check in)
+•	Tra cứu phòng qua sơ đồ phòng
+•	Ghi nhận việc sử dụng dịch vụ (minibar, giặt ủi, điện thoại, thức ăn, các dịch vụ khác)
+•	Tính tiền khi trả phòng – check out ( lập hóa đơn )
+•	Cập nhật giá phòng, giá dịch vụ 
+•	Lập các báo cáo
+	Nội dung thực hiện:
+Khảo sát: 
+•	Nhân viên: mỗi nhân viên thuộc một bộ phận riêng (lễ tân, buồng, nhà hàng) phụ trách công việc nhất định. Một bộ phận có thể có nhiều nhân viên.
+•	Quy định đăng ký đặt phòng: khách sạn có nhiều loại phòng (Standard, Super, VIP…), kiểu phòng (1 giường đôi, 2 giường chiếc, 1 giường đôi và 1 giường chiếc…) ; Kết hợp loại và kiểu phòng ta có hạng phòng ; mỗi phòng sẽ thuộc 1 hạng phòng. Mỗi hạng phòng sẽ có giá nhất định từ 1 thời điểm xác định ; Chỉ nhận giữ chỗ nếu vào thời gian đó phòng còn trống và chưa được đặt chỗ trước. Phiếu đặt phòng ghi nhận thông tin khách đặt, khách thuê, số lượng phòng thuộc 1 hạng phòng được đặt, ngày bắt đầu thuê, số ngày thuê dự kiến ...
+•	Một phòng có thể có các trạng thái  sau : sẵn sàng, có khách, dơ, đặt trước, bảo trì.
+•	Quy định thuê phòng: Có 2 loại phiếu thuê: phiếu thuê trên 1 phiếu đặt trước, hoặc phiếu thuê cho khách vãng lai (không đặt trước) ; Một phiếu thuê phòng quy định ngày đến, giờ đến, số phòng và thông tin các khách ở trong phòng đó.  Lưu ý 1 phòng trong phiếu thuê có thể check in trễ hoặc check out sớm. Ta có thể giảm giá phòng cho nguyên đoàn hoặc 1 số phòng trong đoàn.
+•	Quy định sử dụng dịch vụ:  khách sạn có phục vụ thêm 1 số lọai dịch vụ (ăn uống, giặt là, điện thoại, gửi fax, ... ) với đơn giá riêng cho từng loại. Riêng giặt ủi có 3 giá : giá giặt, giá ủi, giá hấp.
+•	Quy định tính tiền thuê phòng: mỗi hạng phòng có đơn giá riêng, giá phòng không có giá giờ, không phân biệt ngày lễ ngày thường. Giá phòng có thể giảm do khuyến mãi trong 1 khoảng thời gian.
+•	Thông tin khách hàng : ghi nhận thông tin liên lạc của khách hàng khi lần đầu tiên khách hàng đặt phòng hoặc thuê phòng. Nếu những thông tin của khách hàng có thay đổi, sẽ cập nhật thông tin khi khách thuê phòng.
+•	Người sử dụng có thể thay đổi các quy định sau: thay đổi số lượng khách tối đa, đơn giá các loại phòng, tiện nghi của phòng, danh mục dịch vụ, đơn giá các loại dịch vụ.
+•	Người quản trị hệ thống có thể thực hiện thao tác thêm, xóa, phân quyền theo từng bộ phận cho nhân viên khi đăng nhập vào hệ thống.
+
+1.2.1	Quy trình xử lý:
+Lập phiếu thuê phòng
+Khi khách đến khách sạn:
++ Đối với khách đã đặt phòng từ trước: khi yêu cầu nhận phòng phải đưa thông tin liên quan tới cuộc đặt phòng của mình. Nhân viên lễ tân sẽ tìm kiếm thông tin đặt phòng trên máy tính, xác nhận lại các thông tin và lưu vào cơ sở dữ liệu. Thông tin bao gồm thông tin về khách và thông tin phòng khách đặt. 
++ Còn với khách chưa đặt phòng trước: có yêu cầu thuê phòng, nhân viên lễ tân sẽ cung cấp thông tin về các phòng trống hiện có cho khách thông qua việc truy vấn vào kho dữ liệu danh sách phòng. Khách xác nhận thuê phòng, nhân viên lễ tân sẽ lưu thông tin vào cơ sở dữ liệu.  
+Quy trình phục vụ khách hàng trong thời gian khách lưu trú tại khách sạn: 
+Trong thời gian khách  lưu trú tại khách sạn, khi khách có yêu cầu sử dụng dịch vụ, khách sạn sẽ cung cấp các dịch vụ phục vụ nhu cầu của khách. Bộ phận lễ tân thu thập các phiếu sử dụng của khách hàng để tiến hành lập và tổng  hợp lại các khoản chi phí của khách. 
+Quy trình làm thủ tục và thanh toán cho khách:
+Khi khách có yêu cầu trả phòng, bộ phận lễ tân có nhiệm vụ thông báo cho các bộ phận khác trong khách sạn về việc trả phòng của khách nhằm xác định các khoản chưa thanh toán. Khi khách trả phòng, nhân viên lập hoá đơn tổng hợp và tiến hành thanh toán với khách. 
+Cuối mỗi ngày bộ phận lễ tân sẽ viết báo cáo tổng hợp về tình hình khách đến, khách đi, thực trạng phòng trống, phòng bận cũng như thu chi của ngày cũng như ý kiến phản hồi của khách… cho ban giám đốc khách sạn. 
+Yêu cầu:  
+
+  a/ Liệt kê các phòng còn trống theo từng hạng phòng (Phòng, Hạng, Giá)
+  b/ Thống kê doanh thu của khách sạn theo từng tháng, và hạng phòng của năm @nam
+   ( Tháng    Hạng phòng, Tổng doanh thu)
+ c/ Liệt kê thông tin về 1 phiếu đặt phòng dựa vào số CMND người đặt, ngày đặt 
+	(số phiếu đặt, hạng phòng, số lượng phòng, giá)
+
+

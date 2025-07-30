@@ -1,0 +1,202 @@
+-- Insert data for all tables
+-- Data around July 30, 2025
+
+-- Insert bo_phan (departments)
+INSERT INTO `khachsan`.`bo_phan` (`ID_BP`, `TENBP`) VALUES
+('BP001', 'Lễ tân'),
+('BP002', 'Buồng phòng'),
+('BP003', 'Nhà hàng'),
+('BP004', 'Kế toán'),
+('BP005', 'Quản lý');
+
+-- Insert trangthai (room status)
+INSERT INTO `khachsan`.`trangthai` (`ID_TT`, `TEN_TRANG_THAI`) VALUES
+('TT001', 'Sẵn sàng'),
+('TT002', 'Có khách'),
+('TT003', 'Dơ'),
+('TT004', 'Đặt trước'),
+('TT005', 'Bảo trì');
+
+-- Insert kieu_phong (room types)
+INSERT INTO `khachsan`.`kieu_phong` (`ID_KP`, `TEN_KP`, `MO_TA`, `SO_LUONG_KHACH_O`) VALUES
+('KP001', '1 giường đôi', 'Phòng có 1 giường đôi lớn', 2),
+('KP002', '2 giường đơn', 'Phòng có 2 giường đơn', 2),
+('KP003', '1 giường đôi + 1 giường đơn', 'Phòng có 1 giường đôi và 1 giường đơn', 3),
+('KP004', 'Suite', 'Phòng suite cao cấp', 4);
+
+-- Insert loai_phong (room categories)
+INSERT INTO `khachsan`.`loai_phong` (`ID_LP`, `TEN_LP`, `MO_TA`) VALUES
+('LP001', 'Standard', 'Phòng tiêu chuẩn'),
+('LP002', 'Superior', 'Phòng cao cấp'),
+('LP003', 'Deluxe', 'Phòng sang trọng'),
+('LP004', 'VIP', 'Phòng VIP');
+
+-- Insert hang_phong (room classes) - AUTO_INCREMENT starts from 1
+INSERT INTO `khachsan`.`hang_phong` (`ID_KP`, `ID_LP`) VALUES
+('KP001', 'LP001'),
+('KP001', 'LP002'),
+('KP002', 'LP001'),
+('KP003', 'LP003'),
+('KP004', 'LP004');
+
+-- Insert phong (rooms)
+INSERT INTO `khachsan`.`phong` (`SOPHONG`, `TANG`, `ID_HANG_PHONG`, `ID_TT`) VALUES
+('101', 1, 1, 'TT001'),
+('102', 1, 1, 'TT002'),
+('103', 1, 2, 'TT001'),
+('201', 2, 2, 'TT004'),
+('202', 2, 3, 'TT001'),
+('203', 2, 3, 'TT002'),
+('301', 3, 4, 'TT001'),
+('302', 3, 4, 'TT005'),
+('401', 4, 5, 'TT001'),
+('402', 4, 5, 'TT002');
+
+-- Insert nhan_vien (employees)
+INSERT INTO `khachsan`.`nhan_vien` (`ID_NV`, `HO`, `TEN`, `PHAI`, `NGAY_SINH`, `DIA_CHI`, `SDT`, `EMAIL`, `USERNAME`, `PASSWORD`, `ID_BP`) VALUES
+('NV001', 'Nguyễn', 'Văn An', 'Nam', '1990-05-15', '123 Nguyễn Huệ, Q1, TP.HCM', '0901234567', 'an.nguyen@hotel.com', 'admin', '$2a$10$encrypted_password', 'BP005'),
+('NV002', 'Trần', 'Thị Bình', 'Nữ', '1992-08-20', '456 Lê Lợi, Q1, TP.HCM', '0902345678', 'binh.tran@hotel.com', 'letan01', '$2a$10$encrypted_password', 'BP001'),
+('NV003', 'Lê', 'Văn Cường', 'Nam', '1988-12-10', '789 Hai Bà Trưng, Q3, TP.HCM', '0903456789', 'cuong.le@hotel.com', 'buong01', '$2a$10$encrypted_password', 'BP002'),
+('NV004', 'Phạm', 'Thị Dung', 'Nữ', '1995-03-25', '321 Pasteur, Q3, TP.HCM', '0904567890', 'dung.pham@hotel.com', 'nhahang01', '$2a$10$encrypted_password', 'BP003'),
+('NV005', 'Hoàng', 'Văn Em', 'Nam', '1987-11-30', '654 Cách Mạng Tháng 8, Q10, TP.HCM', '0905678901', 'em.hoang@hotel.com', 'ketoan01', '$2a$10$encrypted_password', 'BP004');
+
+-- Insert khach_hang (customers)
+INSERT INTO `khachsan`.`khach_hang` (`CCCD`, `HO`, `TEN`, `SDT`, `EMAIL`, `DIA_CHI`, `MA_SO_THUE`, `MAT_KHAU`) VALUES
+('001234567890', 'Nguyễn', 'Minh Khang', '0911111111', 'khang.nguyen@gmail.com', '12 Nguyễn Văn Cừ, Q5, TP.HCM', '1234567890', '$2a$10$encrypted_password'),
+('002345678901', 'Trần', 'Thị Lan', '0922222222', 'lan.tran@gmail.com', '34 Lý Thường Kiệt, Q10, TP.HCM', '2345678901', '$2a$10$encrypted_password'),
+('003456789012', 'Lê', 'Văn Minh', '0933333333', 'minh.le@gmail.com', '56 Võ Văn Tần, Q3, TP.HCM', '3456789012', '$2a$10$encrypted_password'),
+('004567890123', 'Phạm', 'Thị Nga', '0944444444', 'nga.pham@gmail.com', '78 Điện Biên Phủ, Q1, TP.HCM', '4567890123', '$2a$10$encrypted_password'),
+('005678901234', 'Hoàng', 'Văn Phong', '0955555555', 'phong.hoang@gmail.com', '90 Cộng Hòa, Tân Bình, TP.HCM', '5678901234', '$2a$10$encrypted_password');
+
+-- Insert gia_phong (room prices) - AUTO_INCREMENT starts from 1
+INSERT INTO `khachsan`.`gia_phong` (`ID_HANG_PHONG`, `NGAY_AP_DUNG`, `GIA`, `ID_NV`) VALUES
+(1, '2025-07-01', 800000.00, 'NV001'),
+(2, '2025-07-01', 1200000.00, 'NV001'),
+(3, '2025-07-01', 900000.00, 'NV001'),
+(4, '2025-07-01', 1500000.00, 'NV001'),
+(5, '2025-07-01', 2500000.00, 'NV001');
+
+-- Insert phieudat (booking tickets) - AUTO_INCREMENT starts from 1
+INSERT INTO `khachsan`.`phieudat` (`NGAY_DAT`, `NGAY_BD_THUE`, `NGAY_DI`, `TRANG_THAI`, `SO_TIEN_COC`, `CCCD`, `ID_NV`, `CREATED_AT`, `CREATED_BY`, `UPDATED_AT`, `UPDATED_BY`) VALUES
+('2025-07-25', '2025-07-30', '2025-08-02', 'Đã xác nhận', 500000.00, '001234567890', 'NV002', '2025-07-25 10:30:00', 'NV002', '2025-07-25 10:30:00', 'NV002'),
+('2025-07-28', '2025-08-01', '2025-08-03', 'Đã xác nhận', 800000.00, '002345678901', 'NV002', '2025-07-28 14:15:00', 'NV002', '2025-07-28 14:15:00', 'NV002'),
+('2025-07-29', '2025-08-05', '2025-08-07', 'Chờ xác nhận', 1000000.00, '003456789012', 'NV002', '2025-07-29 09:20:00', 'NV002', '2025-07-29 09:20:00', 'NV002');
+
+-- Insert phieuthue (rental tickets) - AUTO_INCREMENT starts from 1
+INSERT INTO `khachsan`.`phieuthue` (`NGAY_LAP`, `NGAY_DEN`, `NGAY_DI`, `ID_NV`, `CCCD`, `ID_PD`) VALUES
+('2025-07-30', '2025-07-30', '2025-08-02', 'NV002', '001234567890', 1),
+('2025-07-30', '2025-07-30', '2025-08-01', 'NV002', '004567890123', NULL);
+
+-- Insert ct_phieu_thue (rental ticket details) - AUTO_INCREMENT starts from 1
+INSERT INTO `khachsan`.`ct_phieu_thue` (`NGAY_DEN`, `GIO_DEN`, `NGAY_DI`, `DON_GIA`, `TT_THANH_TOAN`, `ID_PT`, `SO_PHONG`) VALUES
+('2025-07-30', '14:00:00', '2025-08-02', 800000.00, 'Chưa thanh toán', 1, '102'),
+('2025-07-30', '15:30:00', '2025-08-01', 1200000.00, 'Chưa thanh toán', 2, '203');
+
+-- Insert ctkhacho (guest details)
+INSERT INTO `khachsan`.`ctkhacho` (`ID_CT_PT`, `CCCD`) VALUES
+(1, '001234567890'),
+(2, '004567890123'),
+(2, '005678901234');
+
+-- Insert dich_vu (services)
+INSERT INTO `khachsan`.`dich_vu` (`ID_DV`, `TEN_DV`, `DON_VI_TINH`) VALUES
+('DV001', 'Minibar', 'Chai/Lon'),
+('DV002', 'Giặt ủi', 'Kg'),
+('DV003', 'Điện thoại', 'Phút'),
+('DV004', 'Thức ăn', 'Suất'),
+('DV005', 'Massage', 'Giờ'),
+('DV006', 'Taxi', 'Chuyến');
+
+-- Insert gia_dich_vu (service prices)
+INSERT INTO `khachsan`.`gia_dich_vu` (`ID_DV`, `NGAY_AP_DUNG`, `GIA`, `ID_NV`) VALUES
+('DV001', '2025-07-01', 50000.00, 'NV001'),
+('DV002', '2025-07-01', 30000.00, 'NV001'),
+('DV003', '2025-07-01', 5000.00, 'NV001'),
+('DV004', '2025-07-01', 150000.00, 'NV001'),
+('DV005', '2025-07-01', 300000.00, 'NV001'),
+('DV006', '2025-07-01', 200000.00, 'NV001');
+
+-- Insert hoa_don (invoices)
+INSERT INTO `khachsan`.`hoa_don` (`ID_HD`, `NGAY_LAP`, `TONG_TIEN`, `TRANG_THAI`, `ID_NV`, `ID_CT_PT`) VALUES
+('HD001', '2025-07-30', 2650000.00, 'Chưa thanh toán', 'NV002', 1),
+('HD002', '2025-07-30', 1350000.00, 'Chưa thanh toán', 'NV002', 2);
+
+-- Insert ct_dich_vu (service details)
+INSERT INTO `khachsan`.`ct_dich_vu` (`ID_CT_DV`, `ID_CT_PT`, `ID_DV`, `NGAY_SU_DUNG`, `GHI_CHU`, `GIA`, `SO_LUONG`, `TT_THANH_TOAN`, `ID_HD`) VALUES
+('CTDV001', 1, 'DV001', '2025-07-30', 'Nước ngọt', 50000.00, 2, 'Chưa thanh toán', 'HD001'),
+('CTDV002', 1, 'DV004', '2025-07-30', 'Bữa tối', 150000.00, 1, 'Chưa thanh toán', 'HD001'),
+('CTDV003', 2, 'DV002', '2025-07-30', 'Giặt quần áo', 30000.00, 1, 'Chưa thanh toán', 'HD002');
+
+-- Insert phu_thu (surcharges)
+INSERT INTO `khachsan`.`phu_thu` (`ID_PHU_THU`, `TEN_PHU_THU`) VALUES
+('PT001', 'Phụ thu cuối tuần'),
+('PT002', 'Phụ thu lễ tết'),
+('PT003', 'Phụ thu khách thêm'),
+('PT004', 'Phụ thu check-in sớm'),
+('PT005', 'Phụ thu check-out muộn');
+
+-- Insert thay_doi_gia_phu_thu (surcharge price changes)
+INSERT INTO `khachsan`.`thay_doi_gia_phu_thu` (`ID_PHU_THU`, `NGAY_AP_DUNG`, `GIA`, `ID_NV`) VALUES
+('PT001', '2025-07-01', 200000.00, 'NV001'),
+('PT002', '2025-07-01', 500000.00, 'NV001'),
+('PT003', '2025-07-01', 100000.00, 'NV001'),
+('PT004', '2025-07-01', 150000.00, 'NV001'),
+('PT005', '2025-07-01', 150000.00, 'NV001');
+
+-- Insert khuyenmai (promotions)
+INSERT INTO `khachsan`.`khuyenmai` (`ID_KM`, `MO_TA_KM`, `NGAY_BAT_DAU`, `NGAY_KET_THUC`) VALUES
+('KM001', 'Giảm giá mùa hè 2025', '2025-07-01', '2025-08-31'),
+('KM002', 'Khuyến mãi khách VIP', '2025-07-15', '2025-09-15'),
+('KM003', 'Ưu đãi đặt phòng sớm', '2025-07-01', '2025-12-31');
+
+-- Insert ctkhuyenmai (promotion details)
+INSERT INTO `khachsan`.`ctkhuyenmai` (`ID_KM`, `ID_HANGPHONG`, `PHAN_TRAM_GIAM`, `ID_HANG_PHONG`) VALUES
+('KM001', 1, 10.00, 1),
+('KM001', 2, 15.00, 2),
+('KM002', 5, 20.00, 5),
+('KM003', 3, 5.00, 3);
+
+-- Insert nhom_quyen (permission groups)
+INSERT INTO `khachsan`.`nhom_quyen` (`ID_NQ`, `TEN_NQ`) VALUES
+('NQ001', 'Quản trị viên'),
+('NQ002', 'Lễ tân'),
+('NQ003', 'Nhân viên buồng'),
+('NQ004', 'Nhân viên nhà hàng'),
+('NQ005', 'Kế toán');
+
+-- Insert phan_quyen (permissions)
+INSERT INTO `khachsan`.`phan_quyen` (`ID_NQ`, `ID_BP`) VALUES
+('NQ001', 'BP005'),
+('NQ002', 'BP001'),
+('NQ003', 'BP002'),
+('NQ004', 'BP003'),
+('NQ005', 'BP004');
+
+-- Insert quan_ly (management)
+INSERT INTO `khachsan`.`quan_ly` (`ID_BP`, `MANV`, `NGAYBDQL`) VALUES
+('BP001', 'NV002', '2025-01-01'),
+('BP002', 'NV003', '2025-01-01'),
+('BP003', 'NV004', '2025-01-01'),
+('BP004', 'NV005', '2025-01-01'),
+('BP005', 'NV001', '2025-01-01');
+
+-- Insert tiennghi (amenities)
+INSERT INTO `khachsan`.`tiennghi` (`ID_TN`, `TEN_TN`, `ICON`) VALUES
+('TN001', 'WiFi miễn phí', 'wifi'),
+('TN002', 'Điều hòa', 'ac'),
+('TN003', 'Tivi', 'tv'),
+('TN004', 'Minibar', 'minibar'),
+('TN005', 'Két sắt', 'safe'),
+('TN006', 'Bồn tắm', 'bathtub');
+
+-- Insert anh_hang_phong (room class images)
+INSERT INTO `khachsan`.`anh_hang_phong` (`ID_ANH_HANG_PHONG`, `URL_ANH`, `ID_HANG_PHONG`) VALUES
+('ANH001', '/images/standard-single.jpg', 1),
+('ANH002', '/images/superior-single.jpg', 2),
+('ANH003', '/images/standard-twin.jpg', 3),
+('ANH004', '/images/deluxe-family.jpg', 4),
+('ANH005', '/images/vip-suite.jpg', 5);
+
+SET SQL_MODE = @OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS = @OLD_UNIQUE_CHECKS;
